@@ -58,10 +58,10 @@ function Blogs() {
       <Header />
       
       {/* Hero Section */}
-      <section className="bg-[#1a2332] px-8 py-40 rounded-b-[40px]">
+      <section className="bg-[#1a2332] px-8 py-16 lg:py-40 rounded-b-[40px]">
         <div className="max-w-5xl mx-auto text-center">
           <h1 
-            className="text-5xl font-bold mb-6 text-white"
+            className="text-3xl lg:text-5xl font-bold mb-6 text-white"
             data-aos="fade-up"
             data-aos-delay="100"
           >
@@ -69,7 +69,7 @@ function Blogs() {
           </h1>
           
           <p 
-            className="text-gray-300 text-lg leading-relaxed max-w-3xl mx-auto"
+            className="text-gray-300 text-base lg:text-lg leading-relaxed max-w-3xl mx-auto"
             data-aos="fade-up"
             data-aos-delay="200"
           >
@@ -79,26 +79,26 @@ function Blogs() {
       </section>
 
       {/* Blog Insights Section */}
-      <section className="py-16 px-8 bg-white">
+      <section className="py-12 lg:py-16 px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           {/* Title and Subtitle */}
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">
+          <div className="text-center mb-8 lg:mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-3 lg:mb-4">
               Latest Insights & Strategies
             </h2>
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 text-base lg:text-lg">
               Stay ahead of the curve with our expert analysis on funding, AI, and strategic growth.
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {insights.map((insight, index) => (
               <div 
                 key={index} 
                 className="rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col transform hover:-translate-y-2 cursor-pointer"
               >
                 {/* Image section */}
-                <div className="h-64 overflow-hidden">
+                <div className="h-48 lg:h-64 overflow-hidden">
                   <img 
                     src={insight.image} 
                     alt={insight.title}
@@ -107,22 +107,22 @@ function Blogs() {
                 </div>
 
                 {/* Content section with dark blue background */}
-                <div className="bg-[#1a2332] text-white p-6 grow flex flex-col">
-                  <p className="text-sm font-semibold tracking-wider mb-3 text-[#60a5fa]">
+                <div className="bg-[#1a2332] text-white p-5 lg:p-6 grow flex flex-col">
+                  <p className="text-xs lg:text-sm font-semibold tracking-wider mb-2 lg:mb-3 text-[#60a5fa]">
                     {insight.category}
                   </p>
                   
-                  <h3 className="text-xl font-bold mb-3 leading-tight">
+                  <h3 className="text-lg lg:text-xl font-bold mb-2 lg:mb-3 leading-tight">
                     {insight.title}
                   </h3>
                   
-                  <p className="text-gray-300 text-sm mb-4 leading-relaxed grow">
+                  <p className="text-gray-300 text-xs lg:text-sm mb-3 lg:mb-4 leading-relaxed grow">
                     {insight.description}
                   </p>
 
-                  <button className="flex items-center gap-2 text-white font-semibold hover:gap-4 transition-all group">
+                  <button className="flex items-center gap-2 text-white text-sm lg:text-base font-semibold hover:gap-4 transition-all group">
                     Read More
-                    <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 lg:w-5 lg:h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </button>

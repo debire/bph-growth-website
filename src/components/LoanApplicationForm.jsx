@@ -2,29 +2,15 @@ import { useState } from 'react'
 import Select from 'react-select'
 
 function LoanApplicationForm() {
+  const [selectedLoanType, setSelectedLoanType] = useState({ value: 'personal', label: 'Personal Loan' })
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    fullName: '',
     email: '',
-    phoneNumber: '',
-    loanType: { value: 'personal', label: 'Personal Loan' },
-    // Personal Loan fields
-    bvn: '',
-    homeAddress: '',
-    employerName: '',
-    employmentType: '',
-    dateOfEmployment: '',
-    netSalary: '',
-    loanAmount: '',
-    loanTenor: ''
+    phoneNumber: ''
   })
 
-  const loanTypeOptions = [
-    { value: 'personal', label: 'Personal Loan' },
-    { value: 'business', label: 'Business Loans' },
-    { value: 'personal-asset', label: 'Personal Asset Loan' },
-    { value: 'business-asset', label: 'Business Asset Loan' }
-  ]
+  // Detect if device is mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024
 
   const handleChange = (e) => {
     setFormData({
@@ -33,17 +19,69 @@ function LoanApplicationForm() {
     })
   }
 
-  const handleSelectChange = (selectedOption) => {
+  const handleSelectChange = (selectedOption, actionMeta) => {
     setFormData({
       ...formData,
-      loanType: selectedOption
+      [actionMeta.name]: selectedOption
+    })
+  }
+
+  const handleLoanTypeChange = (selectedOption) => {
+    setSelectedLoanType(selectedOption)
+    // Keep name, email, phone - reset everything else
+    setFormData({
+      fullName: formData.fullName,
+      email: formData.email,
+      phoneNumber: formData.phoneNumber
     })
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
+    console.log('Loan application submitted:', {
+      loanType: selectedLoanType,
+      ...formData
+    })
+    // Handle form submission here
   }
+
+  // Loan type options
+  const loanTypeOptions = [
+    { value: 'personal', label: 'Personal Loan' },
+    { value: 'business', label: 'Business Loan' },
+    { value: 'personal-asset', label: 'Personal Asset Financing' },
+    { value: 'business-asset', label: 'Business Asset Financing' }
+  ]
+
+  // Common select options
+  const loanAmountOptions = [
+    { value: '50000-500000', label: '₦50,000 - ₦500,000' },
+    { value: '500000-1000000', label: '₦500,000 - ₦1,000,000' },
+    { value: '1000000-2000000', label: '₦1,000,000 - ₦2,000,000' },
+    { value: '2000000-5000000', label: '₦2,000,000 - ₦5,000,000' },
+    { value: '5000000+', label: 'Over ₦5,000,000' }
+  ]
+
+  const repaymentPeriodOptions = [
+    { value: '1-3', label: '1-3 months' },
+    { value: '4-6', label: '4-6 months' },
+    { value: '7-9', label: '7-9 months' },
+    { value: '10-12', label: '10-12 months' }
+  ]
+
+  const employmentStatusOptions = [
+    { value: 'employed', label: 'Employed (Salaried)' },
+    { value: 'self-employed', label: 'Self-Employed' },
+    { value: 'business-owner', label: 'Business Owner' },
+    { value: 'unemployed', label: 'Unemployed' }
+  ]
+
+  const assetTypeOptions = [
+    { value: 'vehicle', label: 'Vehicle' },
+    { value: 'real-estate', label: 'Real Estate' },
+    { value: 'machinery', label: 'Machinery/Equipment' },
+    { value: 'electronics', label: 'Electronics/Gadgets' }
+  ]
 
   // Custom styles for react-select
   const customSelectStyles = {
@@ -98,508 +136,385 @@ function LoanApplicationForm() {
     })
   }
 
-  // Render form fields based on loan type
-  const renderDynamicFields = () => {
-    switch (formData.loanType.value) {
-      case 'personal':
-        return (
-          <>
-            <div>
-              <label className="block text-sm font-medium mb-2">Bank Verification Number</label>
-              <input
-                type="text"
-                name="bvn"
-                placeholder="Enter your BVN"
-                value={formData.bvn}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">House Address</label>
-              <input
-                type="text"
-                name="homeAddress"
-                placeholder="Enter your home address"
-                value={formData.homeAddress}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Employer (Organisation) Name</label>
-              <input
-                type="text"
-                name="employerName"
-                placeholder="Enter your employer name"
-                value={formData.employerName}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Employment Type</label>
-              <input
-                type="text"
-                name="employmentType"
-                placeholder="Enter your employment type"
-                value={formData.employmentType}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Date Of Employment</label>
-              <input
-                type="date"
-                name="dateOfEmployment"
-                placeholder="Enter your date of employment"
-                value={formData.dateOfEmployment}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Net Salary (in Naira)</label>
-              <input
-                type="number"
-                name="netSalary"
-                placeholder="Enter your net salary"
-                value={formData.netSalary}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Loan Amount (in Naira)</label>
-              <input
-                type="number"
-                name="loanAmount"
-                placeholder="Enter your loan amount"
-                value={formData.loanAmount}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Loan Tenor (in months)</label>
-              <input
-                type="number"
-                name="loanTenor"
-                placeholder="Enter your loan tenor"
-                value={formData.loanTenor}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-          </>
-        )
-
-      case 'business':
-        return (
-          <>
-            <div>
-              <label className="block text-sm font-medium mb-2">Business Name</label>
-              <input
-                type="text"
-                name="businessName"
-                placeholder="Enter your business name"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Business Registration Number</label>
-              <input
-                type="text"
-                name="businessRegNumber"
-                placeholder="Enter your registration number"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Business Address</label>
-              <input
-                type="text"
-                name="businessAddress"
-                placeholder="Enter your business address"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Industry Sector</label>
-              <input
-                type="text"
-                name="industrySector"
-                placeholder="Enter your industry sector"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Years in Business</label>
-              <input
-                type="number"
-                name="yearsInBusiness"
-                placeholder="Enter years in business"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Annual Revenue (in Naira)</label>
-              <input
-                type="number"
-                name="annualRevenue"
-                placeholder="Enter your annual revenue"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Loan Amount (in Naira)</label>
-              <input
-                type="number"
-                name="loanAmount"
-                placeholder="Enter your loan amount"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Loan Purpose</label>
-              <input
-                type="text"
-                name="loanPurpose"
-                placeholder="Enter the purpose of the loan"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-          </>
-        )
-
-      case 'personal-asset':
-        return (
-          <>
-            <div>
-              <label className="block text-sm font-medium mb-2">Bank Verification Number</label>
-              <input
-                type="text"
-                name="bvn"
-                placeholder="Enter your BVN"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">House Address</label>
-              <input
-                type="text"
-                name="homeAddress"
-                placeholder="Enter your home address"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Asset Type</label>
-              <input
-                type="text"
-                name="assetType"
-                placeholder="E.g., Vehicle, Electronics, Land"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Asset Description</label>
-              <textarea
-                name="assetDescription"
-                placeholder="Describe the asset you want to finance"
-                rows="3"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Asset Value (in Naira)</label>
-              <input
-                type="number"
-                name="assetValue"
-                placeholder="Enter the asset value"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Monthly Income (in Naira)</label>
-              <input
-                type="number"
-                name="monthlyIncome"
-                placeholder="Enter your monthly income"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Loan Amount (in Naira)</label>
-              <input
-                type="number"
-                name="loanAmount"
-                placeholder="Enter your loan amount"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Loan Tenor (in months)</label>
-              <input
-                type="number"
-                name="loanTenor"
-                placeholder="Enter your loan tenor"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-          </>
-        )
-
-      case 'business-asset':
-        return (
-          <>
-            <div>
-              <label className="block text-sm font-medium mb-2">Business Name</label>
-              <input
-                type="text"
-                name="businessName"
-                placeholder="Enter your business name"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Business Registration Number</label>
-              <input
-                type="text"
-                name="businessRegNumber"
-                placeholder="Enter your registration number"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Business Address</label>
-              <input
-                type="text"
-                name="businessAddress"
-                placeholder="Enter your business address"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Asset Type</label>
-              <input
-                type="text"
-                name="assetType"
-                placeholder="E.g., Machinery, Equipment, Vehicle"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Asset Description</label>
-              <textarea
-                name="assetDescription"
-                placeholder="Describe the asset you want to finance"
-                rows="3"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Asset Value (in Naira)</label>
-              <input
-                type="number"
-                name="assetValue"
-                placeholder="Enter the asset value"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Tax Identification Number</label>
-              <input
-                type="text"
-                name="taxId"
-                placeholder="Enter your TIN"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Loan Amount (in Naira)</label>
-              <input
-                type="number"
-                name="loanAmount"
-                placeholder="Enter your loan amount"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Loan Tenor (in months)</label>
-              <input
-                type="number"
-                name="loanTenor"
-                placeholder="Enter your loan tenor"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-                required
-              />
-            </div>
-          </>
-        )
-
-      default:
-        return null
-    }
-  }
-
   return (
-    <section id="loan-application-form" className="py-16 px-8 bg-white">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-bold mb-3">Loan Application Form</h2>
-          <p className="text-gray-600 text-lg">Get started by filling this form</p>
+    <section id="loan-application-form" className="py-12 lg:py-16 px-4 lg:px-8 bg-[#1a2332]">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-6 lg:mb-8">
+          <h2 className="text-2xl lg:text-4xl font-bold text-white mb-2 lg:mb-3">Apply for a Loan</h2>
+          <p className="text-gray-300 text-sm lg:text-lg">
+            Fill out the form below and we'll get back to you within 24 hours
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="border-2 border-gray-300 rounded-3xl p-8 space-y-6">
-          {/* First Name and Last Name */}
-          <div className="grid grid-cols-2 gap-4">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 lg:p-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+            {/* Common Fields - Always Visible */}
             <div>
-              <label className="block text-sm font-medium mb-2">First name*</label>
               <input
                 type="text"
-                name="firstName"
-                placeholder="Enter your first name"
-                value={formData.firstName}
+                name="fullName"
+                placeholder="Full Name"
+                value={formData.fullName}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
                 required
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium mb-2">Last name*</label>
               <input
-                type="text"
-                name="lastName"
-                placeholder="Enter your last name"
-                value={formData.lastName}
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
                 required
               />
             </div>
+
+            <div>
+              <input
+                type="tel"
+                name="phoneNumber"
+                placeholder="Phone Number"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                required
+              />
+            </div>
+
+            {/* Loan Type Selection */}
+            <div>
+              <Select
+                options={loanTypeOptions}
+                value={selectedLoanType}
+                onChange={handleLoanTypeChange}
+                placeholder="Loan Type"
+                styles={customSelectStyles}
+                isSearchable={!isMobile}
+              />
+            </div>
+
+            {/* Common Loan Fields */}
+            <div>
+              <Select
+                name="loanAmount"
+                options={loanAmountOptions}
+                value={formData.loanAmount}
+                onChange={handleSelectChange}
+                placeholder="Desired Loan Amount"
+                styles={customSelectStyles}
+                isSearchable={!isMobile}
+                required
+              />
+            </div>
+
+            <div>
+              <Select
+                name="repaymentPeriod"
+                options={repaymentPeriodOptions}
+                value={formData.repaymentPeriod}
+                onChange={handleSelectChange}
+                placeholder="Preferred Repayment Period"
+                styles={customSelectStyles}
+                isSearchable={!isMobile}
+                required
+              />
+            </div>
+
+            {/* Personal Loan Specific Fields */}
+            {selectedLoanType.value === 'personal' && (
+              <>
+                <div>
+                  <Select
+                    name="employmentStatus"
+                    options={employmentStatusOptions}
+                    value={formData.employmentStatus}
+                    onChange={handleSelectChange}
+                    placeholder="Employment Status"
+                    styles={customSelectStyles}
+                    isSearchable={!isMobile}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="monthlyIncome"
+                    placeholder="Monthly Income (₦)"
+                    value={formData.monthlyIncome || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div className="lg:col-span-2">
+                  <input
+                    type="text"
+                    name="loanPurpose"
+                    placeholder="Purpose of Loan"
+                    value={formData.loanPurpose || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Business Loan Specific Fields */}
+            {selectedLoanType.value === 'business' && (
+              <>
+                <div>
+                  <input
+                    type="text"
+                    name="businessName"
+                    placeholder="Business Name"
+                    value={formData.businessName || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="businessRegistration"
+                    placeholder="Business Registration Number"
+                    value={formData.businessRegistration || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="yearEstablished"
+                    placeholder="Year Established"
+                    value={formData.yearEstablished || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="monthlyRevenue"
+                    placeholder="Average Monthly Revenue (₦)"
+                    value={formData.monthlyRevenue || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div className="lg:col-span-2">
+                  <textarea
+                    name="businessPurpose"
+                    placeholder="How will this loan help your business?"
+                    value={formData.businessPurpose || ''}
+                    onChange={handleChange}
+                    rows="3"
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 resize-none"
+                    required
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Personal Asset Financing Specific Fields */}
+            {selectedLoanType.value === 'personal-asset' && (
+              <>
+                <div>
+                  <Select
+                    name="assetType"
+                    options={assetTypeOptions}
+                    value={formData.assetType}
+                    onChange={handleSelectChange}
+                    placeholder="Type of Asset"
+                    styles={customSelectStyles}
+                    isSearchable={!isMobile}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="assetValue"
+                    placeholder="Estimated Asset Value (₦)"
+                    value={formData.assetValue || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div className="lg:col-span-2">
+                  <input
+                    type="text"
+                    name="assetDescription"
+                    placeholder="Asset Description (Make, Model, Year, etc.)"
+                    value={formData.assetDescription || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Select
+                    name="employmentStatus"
+                    options={employmentStatusOptions}
+                    value={formData.employmentStatus}
+                    onChange={handleSelectChange}
+                    placeholder="Employment Status"
+                    styles={customSelectStyles}
+                    isSearchable={!isMobile}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="monthlyIncome"
+                    placeholder="Monthly Income (₦)"
+                    value={formData.monthlyIncome || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Business Asset Financing Specific Fields */}
+            {selectedLoanType.value === 'business-asset' && (
+              <>
+                <div>
+                  <input
+                    type="text"
+                    name="businessName"
+                    placeholder="Business Name"
+                    value={formData.businessName || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="businessRegistration"
+                    placeholder="Business Registration Number"
+                    value={formData.businessRegistration || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Select
+                    name="assetType"
+                    options={assetTypeOptions}
+                    value={formData.assetType}
+                    onChange={handleSelectChange}
+                    placeholder="Type of Asset"
+                    styles={customSelectStyles}
+                    isSearchable={!isMobile}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="assetValue"
+                    placeholder="Estimated Asset Value (₦)"
+                    value={formData.assetValue || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div className="lg:col-span-2">
+                  <input
+                    type="text"
+                    name="assetDescription"
+                    placeholder="Asset Description (Make, Model, Year, etc.)"
+                    value={formData.assetDescription || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="monthlyRevenue"
+                    placeholder="Average Monthly Revenue (₦)"
+                    value={formData.monthlyRevenue || ''}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    required
+                  />
+                </div>
+
+                <div className="lg:col-span-2">
+                  <textarea
+                    name="purposeOfAsset"
+                    placeholder="How will this asset benefit your business?"
+                    value={formData.purposeOfAsset || ''}
+                    onChange={handleChange}
+                    rows="3"
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 resize-none"
+                    required
+                  />
+                </div>
+              </>
+            )}
           </div>
 
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
+          {/* Terms and Conditions */}
+          <div className="flex items-start gap-3 mt-4 lg:mt-6">
             <input
-              type="email"
-              name="email"
-              placeholder="Enter your email address"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+              type="checkbox"
+              id="terms"
               required
+              className="mt-1"
             />
+            <label htmlFor="terms" className="text-xs lg:text-sm text-gray-600">
+              I agree to the{' '}
+              <a href="/company-policies" className="underline hover:text-[#60a5fa]">
+                Terms and Conditions
+              </a>
+              {' '}and consent to the processing of my personal data
+            </label>
           </div>
-
-          {/* Phone Number */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Phone number</label>
-            <input
-              type="tel"
-              name="phoneNumber"
-              placeholder="Enter your phone number"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
-              required
-            />
-          </div>
-
-          {/* Loan Type */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Loan Type</label>
-            <Select
-              value={formData.loanType}
-              onChange={handleSelectChange}
-              options={loanTypeOptions}
-              styles={customSelectStyles}
-              isSearchable={false}
-            />
-          </div>
-
-          {/* Dynamic Fields Based on Loan Type */}
-          {renderDynamicFields()}
-
-          {/* Privacy Policy */}
-          <p className="text-sm text-gray-600">
-            By submitting, you agree to our{' '}
-            <a href="/company-policies" className="underline hover:text-[#60a5fa]">
-              Privacy Policy
-            </a>
-          </p>
 
           {/* Submit Button */}
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-6 lg:mt-8">
             <button
               type="submit"
-              className="bg-[#60a5fa] text-white px-16 py-3 rounded-full hover:bg-[#3b82f6] transition-colors font-semibold"
+              className="bg-[#1a2332] text-white px-12 py-2.5 lg:px-16 lg:py-3 text-sm lg:text-base rounded-full hover:bg-[#2a3f52] transition-colors font-semibold"
             >
-              Submit
+              Submit Application
             </button>
           </div>
         </form>

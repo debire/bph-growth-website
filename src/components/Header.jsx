@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import logo from '../assets/Logo.svg'
 
 function Header() {
   const [activeDropdown, setActiveDropdown] = useState(null)
@@ -33,9 +34,9 @@ function Header() {
         {/* Logo and Navigation grouped together */}
         <div className="flex items-center gap-12">
           {/* Logo */}
-          <div className="text-white text-2xl font-bold">
-            <a href="/">LOGO</a>
-          </div>
+          <a href="/" className="flex items-center">
+            <img src={logo} alt="BPH Business + Plan Hub" className="h-10 lg:h-12 w-auto" />
+          </a>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
@@ -149,11 +150,6 @@ function Header() {
                 <div className="absolute top-full left-0 pt-2 animate-fadeIn z-50">
                   <div className="w-[300px] bg-[#2a3f52] rounded-2xl shadow-xl p-6">
                     <ul className="space-y-3">
-                      <li>
-                        <a href="/planning-guide" className="text-white hover:text-[#60a5fa] block py-2">
-                          Planning Guide
-                        </a>
-                      </li>
                       <li>
                         <a href="/blogs" className="text-white hover:text-[#60a5fa] block py-2">
                           Blogs
@@ -281,9 +277,6 @@ function Header() {
               
               {mobileExpandedSection === 'resources' && (
                 <div className="mt-3 ml-4 space-y-2 pb-4">
-                  <a href="/planning-guide" className="text-gray-300 block py-1">
-                    Planning Guide
-                  </a>
                   <a href="/blogs" className="text-gray-300 block py-1">
                     Blogs
                   </a>

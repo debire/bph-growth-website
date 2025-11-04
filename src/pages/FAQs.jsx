@@ -85,10 +85,10 @@ function FAQs() {
       <Header />
       
       {/* Hero Section */}
-      <section className="bg-[#1a2332] px-8 py-40 rounded-b-[40px]">
+      <section className="bg-[#1a2332] px-8 py-16 lg:py-40 rounded-b-[40px]">
         <div className="max-w-5xl mx-auto text-center">
           <h1 
-            className="text-5xl font-bold mb-6 text-white"
+            className="text-3xl lg:text-5xl font-bold mb-6 text-white"
             data-aos="fade-up"
             data-aos-delay="100"
           >
@@ -96,7 +96,7 @@ function FAQs() {
           </h1>
           
           <p 
-            className="text-gray-300 text-lg leading-relaxed max-w-3xl mx-auto"
+            className="text-gray-300 text-base lg:text-lg leading-relaxed max-w-3xl mx-auto"
             data-aos="fade-up"
             data-aos-delay="200"
           >
@@ -106,23 +106,23 @@ function FAQs() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 px-8 bg-white">
+      <section className="py-12 lg:py-16 px-8 bg-white">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-12">
-            <p className="text-sm tracking-wider mb-2">FREQUENTLY ASKED</p>
-            <h2 className="text-5xl font-bold mb-4">Questions</h2>
-            <p className="text-gray-600">
+          <div className="text-center mb-8 lg:mb-12">
+            <p className="text-xs lg:text-sm tracking-wider mb-2">FREQUENTLY ASKED</p>
+            <h2 className="text-4xl lg:text-5xl font-bold mb-3 lg:mb-4">Questions</h2>
+            <p className="text-sm lg:text-base text-gray-600">
               Anything unclear? <a href="mailto:hello@bphgrowth.com" className="text-black hover:text-[#60a5fa] transition-colors">hello@bphgrowth.com</a>
             </p>
           </div>
 
           {/* FAQ Grid */}
-          <div className="grid grid-cols-2 gap-x-16 gap-y-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-x-16 lg:gap-y-12">
             {faqs.map((faq, index) => (
               <div key={index}>
-                <h3 className="text-xl font-bold mb-3">{faq.question}</h3>
-                <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                <h3 className="text-lg lg:text-xl font-bold mb-2 lg:mb-3">{faq.question}</h3>
+                <p className="text-sm lg:text-base text-gray-600 leading-relaxed">{faq.answer}</p>
               </div>
             ))}
           </div>

@@ -6,6 +6,9 @@ function LoanCalculator() {
   const [loanType, setLoanType] = useState({ value: 'personal', label: 'Personal Loan' })
   const [repaymentPeriod, setRepaymentPeriod] = useState(6)
 
+  // Detect if device is mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024
+
   const loanTypeOptions = [
     { value: 'personal', label: 'Personal Loan' },
     { value: 'business', label: 'Business Loans' },
@@ -108,20 +111,20 @@ function LoanCalculator() {
   }
 
   return (
-    <section className="py-16 px-8 bg-white">
+    <section className="py-12 lg:py-16 px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold mb-3">Loan Calculator</h2>
-        <p className="text-gray-600 text-lg mb-12">Find out exactly how much you'll pay each month</p>
+        <h2 className="text-3xl lg:text-4xl font-bold mb-2 lg:mb-3">Loan Calculator</h2>
+        <p className="text-gray-600 text-base lg:text-lg mb-8 lg:mb-12">Find out exactly how much you'll pay each month</p>
 
-        <div className="border-2 border-gray-300 rounded-3xl p-12">
-          <div className="grid grid-cols-2 gap-16">
+        <div className="border-2 border-gray-300 rounded-3xl p-6 lg:p-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
             {/* Left Side - Calculator Inputs */}
-            <div className="space-y-8">
+            <div className="space-y-6 lg:space-y-8">
               {/* Loan Amount */}
               <div>
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-2xl font-bold">Loan Amount</h3>
-                  <span className="text-2xl font-bold">{formatCurrency(loanAmount)}</span>
+                <div className="flex justify-between items-center mb-3 lg:mb-4">
+                  <h3 className="text-l lg:text-2xl font-bold">Loan Amount</h3>
+                  <span className="text-l lg:text-2xl font-bold">{formatCurrency(loanAmount)}</span>
                 </div>
                 <input
                   type="range"
@@ -136,21 +139,21 @@ function LoanCalculator() {
 
               {/* Loan Type */}
               <div>
-                <h3 className="text-2xl font-bold mb-4">Loan Type</h3>
+                <h3 className="text-l lg:text-2xl font-bold mb-3 lg:mb-4">Loan Type</h3>
                 <Select
                   value={loanType}
                   onChange={setLoanType}
                   options={loanTypeOptions}
                   styles={customSelectStyles}
-                  isSearchable={false}
+                  isSearchable={!isMobile}
                 />
               </div>
 
               {/* Repayment Period */}
               <div>
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-2xl font-bold">Repayment Period</h3>
-                  <span className="text-2xl font-bold">{repaymentPeriod} months</span>
+                <div className="flex justify-between items-center mb-3 lg:mb-4">
+                  <h3 className="text-l lg:text-2xl font-bold">Repayment Period</h3>
+                  <span className="text-l lg:text-2xl font-bold">{repaymentPeriod} months</span>
                 </div>
                 <input
                   type="range"
@@ -166,28 +169,28 @@ function LoanCalculator() {
 
             {/* Right Side - Breakdown */}
             <div>
-              <h3 className="text-2xl font-bold mb-3">Breakdown</h3>
-              <p className="text-gray-600 mb-8">Based on the calculation:</p>
+              <h3 className="text-xl lg:text-2xl font-bold mb-2 lg:mb-3">Breakdown</h3>
+              <p className="text-gray-600 text-sm lg:text-base mb-6 lg:mb-8">Based on the calculation:</p>
 
-              <div className="space-y-6">
-                <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                  <span className="text-lg">Monthly Payment:</span>
-                  <span className="text-xl font-semibold">{formatCurrency(breakdown.monthlyPayment)}</span>
+              <div className="space-y-4 lg:space-y-6">
+                <div className="flex justify-between items-center py-2 lg:py-3 border-b border-gray-200">
+                  <span className="text-base lg:text-lg">Monthly Payment:</span>
+                  <span className="text-lg lg:text-xl font-semibold">{formatCurrency(breakdown.monthlyPayment)}</span>
                 </div>
 
-                <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                  <span className="text-lg">Total Interest:</span>
-                  <span className="text-xl font-semibold">{formatCurrency(breakdown.totalInterest)}</span>
+                <div className="flex justify-between items-center py-2 lg:py-3 border-b border-gray-200">
+                  <span className="text-base lg:text-lg">Total Interest:</span>
+                  <span className="text-lg lg:text-xl font-semibold">{formatCurrency(breakdown.totalInterest)}</span>
                 </div>
 
-                <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                  <span className="text-lg">Processing fee:</span>
-                  <span className="text-xl font-semibold">{formatCurrency(breakdown.processingFee)}</span>
+                <div className="flex justify-between items-center py-2 lg:py-3 border-b border-gray-200">
+                  <span className="text-base lg:text-lg">Processing fee:</span>
+                  <span className="text-lg lg:text-xl font-semibold">{formatCurrency(breakdown.processingFee)}</span>
                 </div>
 
-                <div className="flex justify-between items-center py-3">
-                  <span className="text-lg font-bold">Total Repayment:</span>
-                  <span className="text-xl font-bold">{formatCurrency(breakdown.totalRepayment)}</span>
+                <div className="flex justify-between items-center py-2 lg:py-3">
+                  <span className="text-base lg:text-lg font-bold">Total Repayment:</span>
+                  <span className="text-lg lg:text-xl font-bold">{formatCurrency(breakdown.totalRepayment)}</span>
                 </div>
               </div>
             </div>

@@ -28,34 +28,36 @@ function CoreValues() {
   ]
 
   return (
-    <section className="py-16 px-8 bg-white">
+    <section className="py-12 lg:py-16 px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-center mb-16">
+        <h2 className="text-3xl lg:text-4xl font-bold text-center mb-8 lg:mb-16">
           Our Core Values
         </h2>
 
-        <div className="grid grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {values.map((value, index) => (
             <div key={index} className="relative flex flex-col">
+              {/* Custom dashed divider with 8 dashes - Desktop only */}
               {index !== values.length - 1 && (
-                <div className="absolute right-0 top-0 h-full flex flex-col justify-between py-4">
+                <div className="hidden lg:flex absolute right-0 top-0 h-full flex-col justify-between py-4">
                   {[...Array(8)].map((_, i) => (
                     <div key={i} className="w-0.5 bg-black h-[8%]" />
                   ))}
                 </div>
               )}
               
-              <div className="text-center px-4 flex flex-col h-full">
-                <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+              <div className="text-center px-2 lg:px-4 flex flex-col h-full">
+                {/* Icon */}
+                <div className="w-16 h-16 lg:w-24 lg:h-24 mx-auto mb-4 lg:mb-6 flex items-center justify-center">
                   <img src={value.icon} alt={value.title} className="w-full h-full object-contain" />
                 </div>
                 
-                <h3 className="text-xl font-bold mb-4 h-14 flex items-center justify-center">
+                <h3 className="text-base lg:text-xl font-bold mb-3 lg:mb-4 min-h-12 lg:h-14 flex items-center justify-center">
                   {value.title}
                 </h3>
                 
-                <div className="flex-grow flex items-start">
-                  <p className="text-sm leading-relaxed text-gray-700">
+                <div className="grow flex items-start">
+                  <p className="text-xs lg:text-sm leading-relaxed text-gray-700">
                     {value.description}
                   </p>
                 </div>
