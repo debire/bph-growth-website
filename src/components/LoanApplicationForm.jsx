@@ -45,10 +45,11 @@ function LoanApplicationForm() {
     // Handle form submission here
   }
 
-  // Loan type options
+  // Loan type options - ADDED EQUITY FINANCING
   const loanTypeOptions = [
     { value: 'personal', label: 'Personal Loan' },
     { value: 'business', label: 'Business Loan' },
+    { value: 'equity', label: 'Equity Financing' },
     { value: 'personal-asset', label: 'Personal Asset Financing' },
     { value: 'business-asset', label: 'Business Asset Financing' }
   ]
@@ -219,7 +220,7 @@ function LoanApplicationForm() {
                 options={repaymentPeriodOptions}
                 value={formData.repaymentPeriod}
                 onChange={handleSelectChange}
-                placeholder="Preferred Repayment Period"
+                placeholder="Desired Repayment Period"
                 styles={customSelectStyles}
                 isSearchable={!isMobile}
                 required
@@ -255,21 +256,21 @@ function LoanApplicationForm() {
                 </div>
 
                 <div className="lg:col-span-2">
-                  <input
-                    type="text"
+                  <textarea
                     name="loanPurpose"
                     placeholder="Purpose of Loan"
                     value={formData.loanPurpose || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                    rows="3"
+                    className="w-full px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 resize-none"
                     required
                   />
                 </div>
               </>
             )}
 
-            {/* Business Loan Specific Fields */}
-            {selectedLoanType.value === 'business' && (
+            {/* Business Loan & Equity Financing Specific Fields - IDENTICAL */}
+            {(selectedLoanType.value === 'business' || selectedLoanType.value === 'equity') && (
               <>
                 <div>
                   <input
