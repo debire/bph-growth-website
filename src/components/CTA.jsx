@@ -10,7 +10,7 @@ function CTA() {
           Join thousands of satisfied customers who trust us with their business growth
         </p>
 
-        <a href="/services">
+        <a href="/services#consultation-form">
           <button className="bg-[#1a2332] text-white px-6 py-3 lg:px-10 lg:py-4 rounded-full text-base lg:text-lg font-semibold hover:bg-[#2a3f52] transition-colors transform hover:scale-105">
             Schedule Consultation
           </button>
