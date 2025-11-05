@@ -142,7 +142,7 @@ function LoanApplicationForm() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-6 lg:mb-8">
-          <h2 className="text-2xl lg:text-4xl font-bold text-white mb-2 lg:mb-3">Apply for a Loan</h2>
+          <h2 className="text-2xl lg:text-4xl font-bold text-white mb-2 lg:mb-3">Fund Your Growth</h2>
           <p className="text-gray-300 text-sm lg:text-lg">
             Fill out the form below and we'll get back to you within 24 hours
           </p>
