@@ -15,6 +15,21 @@ function Services() {
     })
   }, [])
 
+  // Add this new useEffect for scrolling to anchor
+  useEffect(() => {
+    // Check if there's a hash in the URL
+    const hash = window.location.hash
+    if (hash) {
+      // Small delay to ensure page is fully loaded
+      setTimeout(() => {
+        const element = document.querySelector(hash)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }, 100)
+    }
+  }, [])
+
   return (
     <div className="bg-white">
       <Header />
