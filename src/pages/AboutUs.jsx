@@ -34,11 +34,12 @@ function AboutUs() {
               
               <div className="space-y-4 lg:space-y-6 text-sm lg:text-base text-gray-700 leading-relaxed">
                 <p>
-                  At Business Plan Hub Growth, we have a proven track record of helping SMEs/Start-ups grow profitably and scale quickly. We provide holistic Business Support and Advisory Services, integrating modern technology and deep human expertise. We specialize in overcoming the most common pain points of Nigerian SMEs: Access to Capital, Access to Market, and Access to Talent.
+                  We are BPH Growth, a pioneering firm dedicated to transforming entrepreneurs, startups, and SMEs into profitable, scalable ventures. We operate on a unique dual-engine model that integrates world-class strategic consulting with proprietary financial services. We don't just write plans; we provide the Capital, Strategy, and Operational Playbook required for successful execution.
+
                 </p>
                 
                 <p>
-                  We don't just write plans; we craft bankable strategies that make investors run after you. Our successful business re-engineering processes and lean-centered scale models have commanded behemoth results for our clientele across Financial Services, FMCG, Tech, and Agriculture.
+                  Our foundation is built on years of experience in Fintech, Banking, and Strategic Planning, backed by a proprietary AI system that turns raw data into predictive insights. We are your partner for sustainable growth, risk mitigation, and operational excellence in the competitive market.
                 </p>
               </div>
             </div>
@@ -49,7 +50,7 @@ function AboutUs() {
               <div>
                 <h2 className="text-2xl lg:text-3xl font-bold mb-4 lg:mb-6">Our Vision</h2>
                 <p className="text-sm lg:text-lg text-gray-700 leading-relaxed">
-                  To be Africa's leading business growth platform, recognized for transforming ambitious ideas into successful enterprises through innovation, expertise, and unwavering commitment to our clients' success.
+                  To build the most trusted and efficient ecosystem for enterprise development. We aim to be the go-to platform that entrepreneurs and investors rely on for strategic certainty, verifiable data, and agile capital access.
                 </p>
               </div>
 

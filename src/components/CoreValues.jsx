@@ -7,22 +7,22 @@ function CoreValues() {
   const values = [
     {
       title: "Resourcefulness",
-      description: "Achieving more with less through lean and agile methodologies.",
+      description: "We are evangelists of the lean methodology, helping our clientele achieve more with less. We prioritize innovative, high-impact operational solutions over high-cost overheads.",
       icon: ideaIcon
     },
     {
       title: "Leadership",
-      description: "Empowering market dominion through innovation and high responsiveness.",
+      description: "We emphasize market leadership through innovation and high responsiveness. We strive to help our clients become definitive brands in their sectors.",
       icon: leadershipIcon
     },
     {
       title: "Accountability",
-      description: "Operating with the highest level of professionalism and transparency.",
+      description: "We operate with the highest level of professionalism and ensure transparency in our business conduct towards our clients, investors, and community.",
       icon: handshakeIcon
     },
     {
       title: "Commitment",
-      description: "Driven to see our client start-ups scale within the socio-political setting regardless of the challenges.",
+      description: "We are deeply committed to the entrepreneurial ecosystem, providing every intellectual, financial, and social resource at our disposal to see SMEs scale.",
       icon: goalIcon
     }
   ]

@@ -1,10 +1,12 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
 function FAQs() {
+  const [showAll, setShowAll] = useState(false)
+
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -37,6 +39,38 @@ function FAQs() {
     {
       question: "What documents do I need to apply for a loan?",
       answer: "You'll need valid ID, BVN, proof of income, proof of residence, and bank statements. Business loans require additional documentation including business registration, tax ID, and business bank statements."
+    },
+    {
+      question: "How does 'The Growth Blueprint' ensure my plan is executable?",
+      answer: "We dedicate a phase to creating the Operational Execution Playbook—a high-value deliverable that provides specific system architecture, workflow designs, and process audits (Ops Diagnostics) necessary to implement the strategy without friction."
+    },
+    {
+      question: "What is the 'AI Governance Roadmap'?",
+      answer: "This consulting service goes beyond simply installing AI tools. We help you design the ethical, compliant, and data-secure frameworks necessary to integrate AI into your operations (as required by local and international standards)."
+    },
+    {
+      question: "Is the Business Clinic mandatory for loans?",
+      answer: "For high-risk products like Micro-Enterprise Trade Finance, a mandatory component of the Business Clinic Micro-Training is required before disbursement to ensure financial literacy and mitigate compliance risk."
+    },
+    {
+      question: "How does BPH Growth Fund determine eligibility for loans?",
+      answer: "We use a hybrid underwriting model. We look at standard factors (income verification) plus our proprietary data: 1. PlansDeck Data Scoring (for consulting clients), and 2. Cluster Risk Scoring (for Micro-Trade clients)."
+    },
+    {
+      question: "What is 'Systemic Efficiency Coaching' in the Business Clinic?",
+      answer: "It's the practical application of the mindset work. We combine visualization with tangible skill development in personal workflow optimization, digital system organization, and executive habit formation."
+    },
+    {
+      question: "Can I hire the Consulting Arm without taking a loan?",
+      answer: "Absolutely. The Consulting Services arm operates autonomously. You can hire us solely for strategy, operational execution, or training without any obligation to engage the Fund."
+    },
+    {
+      question: "What is the typical timeline for 'The Growth Blueprint'?",
+      answer: "The timeline typically ranges from 4 to 8 weeks, depending on the complexity of your business and the promptness of providing the required discovery materials."
+    },
+    {
+      question: "When will the P2P Marketplace be available?",
+      answer: "We are currently in the Pilot and Validation Phase of our lending products. We anticipate beginning the build-out and onboarding external retail investors for the P2P Debt Platform in the Mid-Term (Months 12-18)."
     },
     {
       question: "Can you help with equity financing and investor connections?",
@@ -80,6 +114,9 @@ function FAQs() {
     }
   ]
 
+  // Show only first 6 FAQs by default
+  const displayedFaqs = showAll ? faqs : faqs.slice(0, 6)
+
   return (
     <div className="bg-white">
       <Header />
@@ -119,13 +156,40 @@ function FAQs() {
 
           {/* FAQ Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-x-16 lg:gap-y-12">
-            {faqs.map((faq, index) => (
+            {displayedFaqs.map((faq, index) => (
               <div key={index}>
                 <h3 className="text-lg lg:text-xl font-bold mb-2 lg:mb-3">{faq.question}</h3>
                 <p className="text-sm lg:text-base text-gray-600 leading-relaxed">{faq.answer}</p>
               </div>
             ))}
           </div>
+
+          {/* Load More Button */}
+          {!showAll && faqs.length > 6 && (
+            <div className="flex justify-center mt-8 lg:mt-12">
+              <button
+                onClick={() => setShowAll(true)}
+                className="bg-[#1a2332] text-white px-8 py-3 rounded-full text-base font-semibold hover:bg-[#2a3f52] transition-colors"
+              >
+                Load More
+              </button>
+            </div>
+          )}
+
+          {/* Show Less Button (optional) */}
+          {showAll && (
+            <div className="flex justify-center mt-8 lg:mt-12">
+              <button
+                onClick={() => {
+                  setShowAll(false)
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }}
+                className="bg-gray-200 text-gray-800 px-8 py-3 rounded-full text-base font-semibold hover:bg-gray-300 transition-colors"
+              >
+                Show Less
+              </button>
+            </div>
+          )}
         </div>
       </section>
 

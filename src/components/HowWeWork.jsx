@@ -2,33 +2,27 @@ function HowWeWork() {
   const steps = [
     {
       number: "1",
-      title: "Discovery & Assessment",
-      description: "We analyze your business goals, challenges, and market position to understand your unique needs.",
+      title: "Strategic Business Review",
+      description: "We conduct deep external (PESTEL, Porter's) and internal (SWOT, Values) analysis to assess your current state and competitive intensity.",
       align: "left"
     },
     {
       number: "2",
-      title: "Strategic Planning",
-      description: "Our experts develop a customized roadmap with actionable strategies tailored to your business objectives.",
+      title: "Business Visioning",
+      description: "We define your desired future state, set ambitious yet measurable goals (OKRs), and establish the critical success factors required to achieve them.",
       align: "right"
     },
     {
       number: "3",
-      title: "Implementation Support",
-      description: "We guide you through executing the plan with hands-on support and AI-powered tools for maximum efficiency.",
+      title: "Development of Strategies",
+      description: "We formulate precise strategies for Growth, Technology (AI), and Finance, leveraging market opportunity gaps and your unique value proposition.",
       align: "left"
     },
     {
       number: "4",
-      title: "Growth & Optimization",
-      description: "Monitor progress, refine strategies, and scale operations to achieve sustainable business growth.",
+      title: "Implementation & Execution",
+      description: "We define the tactical blueprint, identify key programs, and create the operational execution playbook for immediate launch or disbursement.",
       align: "right"
-    },
-    {
-      number: "5",
-      title: "Ongoing Partnership",
-      description: "Continuous support and advisory services to ensure long-term success and adaptability to market changes.",
-      align: "left"
     }
   ]
 

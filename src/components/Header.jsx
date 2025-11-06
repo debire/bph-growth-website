@@ -161,8 +161,8 @@ function Header() {
                         </a>
                       </li>
                       <li>
-                        <a href="/company-policies" className="text-white hover:text-[#60a5fa] block py-2">
-                          Company Policies
+                        <a href="/resource-center" className="text-white hover:text-[#60a5fa] block py-2">
+                          Resource Center
                         </a>
                       </li>
                     </ul>

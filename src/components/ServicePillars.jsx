@@ -29,22 +29,21 @@ function ServicePillars() {
       image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80"
     },
     {
-      title: "Personal & Business Loans",
+      title: "Personal,Business & Asset Financing Loans",
       description: "Fast, flexible loan solutions to help you achieve your personal goals and grow your business without delays.",
       points: [
         "Personal Loans: Bills, Education, Weddings, Home Repairs",
         "Business Loans: Inventory, Equipment, Expansion, Working Capital",
         "Loan Amounts: ₦50,000 - ₦5,000,000",
-        "Quick Processing: 2-24 Hours Approval",
+        "Asset Financing: Vehicles, Machinery, Real Estate, Electronics",
         "Flexible Tenure: 1-12 Months Repayment Options"
       ],
       image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&q=80"
     },
     {
-      title: "Asset Financing & Capital Access",
-      description: "Unlock capital through asset financing and connect with investors to scale your business sustainably.",
+      title: "Capital Access",
+      description: "We connect with investors and donors to scale your business sustainably.",
       points: [
-        "Asset Financing: Vehicles, Machinery, Real Estate, Electronics",
         "Equity Financing: Angel Investment and Venture Capital",
         "Grant Writing and Proposal Development Support",
         "Investor Readiness and Due Diligence Preparation",
@@ -66,7 +65,7 @@ function ServicePillars() {
           {services.map((service, index) => (
             <div
               key={index}
-              className={`relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-700 ease-out ${
+              className={`relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-out ${
                 expandedCard === index ? 'flex-2' : 'flex-[0.5]'
               }`}
               onMouseEnter={() => setExpandedCard(index)}

@@ -5,24 +5,24 @@ function FAQ() {
       answer: "We provide comprehensive business consulting including strategic planning, AI integration, funding access, leadership development, and operational optimization tailored to your growth stage."
     },
     {
-      question: "How long does the consulting process take?",
-      answer: "Our engagement timelines vary based on your needs. Initial assessments take 1-2 weeks, while full strategic implementations typically span 3-6 months with ongoing support available."
+      question: "How does 'The Growth Blueprint' ensure my plan is executable?",
+      answer: "We dedicate a phase to creating the Operational Execution Playbook—a high-value deliverable that provides specific system architecture, workflow designs, and process audits (Ops Diagnostics) necessary to implement the strategy without friction."
     },
     {
-      question: "Do you work with startups or established businesses?",
-      answer: "We work with businesses at all stages - from early-stage startups seeking validation to established companies looking to scale or pivot their operations."
+      question: "What is the 'AI Governance Roadmap?",
+      answer: "This consulting service goes beyond simply installing AI tools. We help you design the ethical, compliant, and data-secure frameworks necessary to integrate AI into your operations (as required by local and international standards)."
     },
     {
-      question: "What makes BPH Growth different from other consultants?",
-      answer: "We combine traditional business expertise with AI-augmented insights, offering data-driven strategies alongside personalized mentorship and access to our funding network."
+      question: "Is the Business Clinic mandatory for loans?",
+      answer: "For high-risk products like Micro-Enterprise Trade Finance, a mandatory component of the Business Clinic Micro-Training is required before disbursement to ensure financial literacy and mitigate compliance risk."
     },
     {
-      question: "How much does your consulting service cost?",
-      answer: "Our pricing is customized based on your specific needs and business size. We offer flexible packages and payment plans. Contact us for a personalized quote."
+      question: "How does BPH Growth Fund determine eligibility for loans?",
+      answer: "We use a hybrid underwriting model. We look at standard factors (income verification) plus our proprietary data: 1. PlansDeck Data Scoring (for consulting clients), and 2. Cluster Risk Scoring (for Micro-Trade clients)."
     },
     {
-      question: "Can you help with funding and investor connections?",
-      answer: "Yes! We provide verified funding access, help prepare investor-ready materials, and connect you with our network of investors and financial partners."
+      question: "What is 'Systemic Efficiency Coaching' in the Business Clinic?",
+      answer: "It's the practical application of the mindset work. We combine visualization with tangible skill development in personal workflow optimization, digital system organization, and executive habit formation."
     }
   ]
 
