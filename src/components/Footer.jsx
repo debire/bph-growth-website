@@ -50,10 +50,10 @@ function Footer() {
           <div className="lg:col-span-3">
             <h3 className="text-base font-bold mb-4 text-white">Our Services</h3>
             <ul className="space-y-3">
-              <li className="text-gray-300">Funding & Capital Access</li>
               <li className="text-gray-300">Strategic Planning & Business Consulting</li>
-              <li className="text-gray-300">Personal and Business Loans</li>
-              <li className="text-gray-300">Asset Financing & Capital Access</li>
+              <li className="text-gray-300">AI Consulting & Digital Transformation</li>
+              <li className="text-gray-300">Personal, Business & Asset Financing Loans</li>
+              <li className="text-gray-300">Capital Access</li>
             </ul>
           </div>
 
