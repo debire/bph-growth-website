@@ -133,43 +133,15 @@ function Header() {
               )}
             </div>
 
-            {/* Resources Dropdown */}
-            <div
-              className="relative z-50"
-              onMouseEnter={() => setActiveDropdown('resources')}
-              onMouseLeave={() => setActiveDropdown(null)}
-            >
-              <button className="text-white flex items-center gap-2 hover:text-gray-300 py-6">
-                Resources
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
+            {/* Resource Center - Direct Link */}
+            <a href="/resource-center" className="text-white hover:text-gray-300 py-6">
+              Resource Center
+            </a>
 
-              {activeDropdown === 'resources' && (
-                <div className="absolute top-full left-0 pt-2 animate-fadeIn z-50">
-                  <div className="w-[300px] bg-[#2a3f52] rounded-2xl shadow-xl p-6">
-                    <ul className="space-y-3">
-                      <li>
-                        <a href="/blogs" className="text-white hover:text-[#60a5fa] block py-2">
-                          Blogs
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/faqs" className="text-white hover:text-[#60a5fa] block py-2">
-                          FAQs
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/resource-center" className="text-white hover:text-[#60a5fa] block py-2">
-                          Resource Center
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Blog - Direct Link */}
+            <a href="/blogs" className="text-white hover:text-gray-300 py-6">
+              Blog
+            </a>
           </nav>
         </div>
 
@@ -259,35 +231,18 @@ function Header() {
               )}
             </div>
 
-            {/* Resources Section */}
-            <div>
-              <button
-                onClick={() => toggleMobileSection('resources')}
-                className="w-full flex items-center justify-between text-white font-semibold py-2"
-              >
-                Resources
-                <svg
-                  className={`w-5 h-5 transition-transform ${mobileExpandedSection === 'resources' ? 'rotate-180' : ''}`}
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-              
-              {mobileExpandedSection === 'resources' && (
-                <div className="mt-3 ml-4 space-y-2 pb-4">
-                  <a href="/blogs" className="text-gray-300 block py-1">
-                    Blogs
-                  </a>
-                  <a href="/faqs" className="text-gray-300 block py-1">
-                    FAQs
-                  </a>
-                  <a href="/company-policies" className="text-gray-300 block py-1">
-                    Company Policies
-                  </a>
-                </div>
-              )}
+            {/* Resource Center - Direct Link */}
+            <div className="border-b border-gray-600 pb-4 mb-4">
+              <a href="/resource-center" className="text-white py-2 block">
+                Resource Center
+              </a>
+            </div>
+
+            {/* Blog - Direct Link */}
+            <div className="pb-4">
+              <a href="/blogs" className="text-white py-2 block">
+                Blog
+              </a>
             </div>
           </nav>
         </div>

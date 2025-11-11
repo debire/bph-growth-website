@@ -1,6 +1,6 @@
 import facebookIcon from '../assets/icons/Facebook.svg'
 import linkedinIcon from '../assets/icons/LinkedIn.svg'
-import xIcon from '../assets/icons/X.svg'
+import instagramIcon from '../assets/icons/Instagram.svg'
 import logo from '../assets/Logo.svg'
 
 function Footer() {
@@ -17,22 +17,22 @@ function Footer() {
               The go-to support system for the SME/Start-up community in Nigeria, helping them achieve scale and growth.
             </p>
             {/* Social Icons */}
-            {/* <div className="flex gap-4">
+            <div className="flex gap-4">
               
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded hover:opacity-80 transition-opacity">
+              <a href="https://www.facebook.com/businessplans.hub" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded hover:opacity-80 transition-opacity">
                 <img src={facebookIcon} alt="Facebook" className="w-6 h-6" />
               </a>
               
               
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded hover:opacity-80 transition-opacity">
+              <a href="https://www.linkedin.com/company/thebusinessplanhub" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded hover:opacity-80 transition-opacity">
                 <img src={linkedinIcon} alt="LinkedIn" className="w-6 h-6" />
               </a>
               
              
-              <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded hover:opacity-80 transition-opacity">
-                <img src={xIcon} alt="X" className="w-5 h-5" />
+              <a href="https://www.instagram.com/businessplans.hub/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded hover:opacity-80 transition-opacity">
+                <img src={instagramIcon} alt="Instagram" className="w-5 h-5" />
               </a>
-            </div> */}
+            </div>
           </div>
 
           {/* Quick Links */}
@@ -73,7 +73,7 @@ function Footer() {
               <p className="wrap-break-word">
                 Email: <a href="mailto:hello@bphgrowth.com" className="hover:text-white">hello@bphgrowth.com</a>
               </p>
-              <p>Phone: +234...available upon inquiry</p>
+              <p>Phone: +234 708 009 6148</p>
             </div>
           </div>
         </div>

@@ -32,7 +32,7 @@ function AboutUs() {
             <div>
               <h2 className="text-2xl lg:text-3xl font-bold mb-4 lg:mb-6">Who We Are</h2>
               
-              <div className="space-y-4 lg:space-y-6 text-sm lg:text-base text-gray-700 leading-relaxed">
+              <div className="space-y-4 lg:space-y-6 text-sm lg:text-lg text-gray-700 leading-relaxed">
                 <p>
                   We are BPH Growth, a pioneering firm dedicated to transforming entrepreneurs, startups, and SMEs into profitable, scalable ventures. We operate on a unique dual-engine model that integrates world-class strategic consulting with proprietary financial services. We don't just write plans; we provide the Capital, Strategy, and Operational Playbook required for successful execution.
 
@@ -90,7 +90,7 @@ function AboutUs() {
                 {/* 1. AI-Augmented Intelligence */}
                 <div>
                   <h3 className="text-xl lg:text-2xl font-bold mb-3 lg:mb-4">1. AI-Augmented Intelligence</h3>
-                  <p className="text-sm lg:text-base text-gray-700 leading-relaxed">
+                  <p className="text-sm lg:text-lg text-gray-700 leading-relaxed">
                     Traditional consulting meets cutting-edge technology. We leverage AI-powered market research, financial modeling, and predictive analytics to give you data-driven insights that traditional consultants simply can't match.
                   </p>
                 </div>
@@ -98,7 +98,7 @@ function AboutUs() {
                 {/* 2. Nigerian Market Expertise */}
                 <div>
                   <h3 className="text-xl lg:text-2xl font-bold mb-3 lg:mb-4">2. Nigerian Market Expertise</h3>
-                  <p className="text-sm lg:text-base text-gray-700 leading-relaxed">
+                  <p className="text-sm lg:text-lg text-gray-700 leading-relaxed">
                     We don't offer cookie-cutter solutions. Our team deeply understands the Nigerian business landscape, regulatory environment, and funding ecosystem, allowing us to provide context-specific strategies that actually work.
                   </p>
                 </div>
@@ -106,7 +106,7 @@ function AboutUs() {
                 {/* 3. End-to-End Partnership */}
                 <div>
                   <h3 className="text-xl lg:text-2xl font-bold mb-3 lg:mb-4">3. End-to-End Partnership</h3>
-                  <p className="text-sm lg:text-base text-gray-700 leading-relaxed">
+                  <p className="text-sm lg:text-lg text-gray-700 leading-relaxed">
                     We're not just consultants—we're your growth partners. From initial ideation through funding to scale, we provide continuous support, resources, and guidance at every stage of your journey.
                   </p>
                 </div>

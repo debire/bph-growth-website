@@ -6,6 +6,7 @@ import Footer from '../components/Footer'
 
 function FAQs() {
   const [showAll, setShowAll] = useState(false)
+  const [openIndex, setOpenIndex] = useState(null)
 
   useEffect(() => {
     AOS.init({
@@ -14,6 +15,10 @@ function FAQs() {
       easing: 'ease-out'
     })
   }, [])
+
+  const toggleFAQ = (index) => {
+    setOpenIndex(openIndex === index ? null : index)
+  }
 
   const faqs = [
     {
@@ -144,7 +149,7 @@ function FAQs() {
 
       {/* FAQ Section */}
       <section className="py-12 lg:py-16 px-8 bg-white">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8 lg:mb-12">
             <p className="text-xs lg:text-sm tracking-wider mb-2">FREQUENTLY ASKED</p>
@@ -154,12 +159,45 @@ function FAQs() {
             </p>
           </div>
 
-          {/* FAQ Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-x-16 lg:gap-y-12">
+          {/* FAQ Accordion */}
+          <div className="space-y-4 mb-12">
             {displayedFaqs.map((faq, index) => (
-              <div key={index}>
-                <h3 className="text-lg lg:text-xl font-bold mb-2 lg:mb-3">{faq.question}</h3>
-                <p className="text-sm lg:text-base text-gray-600 leading-relaxed">{faq.answer}</p>
+              <div key={index} className="border-b border-gray-300">
+                {/* Question Header */}
+                <button
+                  onClick={() => toggleFAQ(index)}
+                  className="w-full flex items-center justify-between py-5 text-left transition-colors"
+                >
+                  <h3 className="text-base lg:text-lg font-semibold pr-8">
+                    {faq.question}
+                  </h3>
+                  
+                  {/* Plus/Minus Icon */}
+                  <div className="shrink-0 w-6 h-6 flex items-center justify-center">
+                    {openIndex === index ? (
+                      // Minus icon
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                      </svg>
+                    ) : (
+                      // Plus icon
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    )}
+                  </div>
+                </button>
+
+                {/* Answer - Expandable */}
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    openIndex === index ? 'max-h-96 pb-5' : 'max-h-0'
+                  }`}
+                >
+                  <p className="text-sm lg:text-base text-gray-600 leading-relaxed pr-8">
+                    {faq.answer}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -176,12 +214,13 @@ function FAQs() {
             </div>
           )}
 
-          {/* Show Less Button (optional) */}
+          {/* Show Less Button */}
           {showAll && (
             <div className="flex justify-center mt-8 lg:mt-12">
               <button
                 onClick={() => {
                   setShowAll(false)
+                  setOpenIndex(null) // Close any open FAQs
                   window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
                 className="bg-gray-200 text-gray-800 px-8 py-3 rounded-full text-base font-semibold hover:bg-gray-300 transition-colors"
