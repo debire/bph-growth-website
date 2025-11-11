@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import Home from './pages/Home'
 import AboutUs from './pages/AboutUs'
 import Services from './pages/Services'
@@ -6,6 +7,7 @@ import BPHGrowthFund from './pages/BPHGrowthFund'
 import ContactUs from './pages/ContactUs'
 import Blogs from './pages/Blogs'
 import FAQs from './pages/FAQs'
+import ResourceCenter from './pages/ResourceCenter'
 
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin'
@@ -15,9 +17,30 @@ import LoanApplications from './pages/admin/LoanApplications'
 import FAQManager from './pages/admin/FAQManager'
 import InsightsManager from './pages/admin/InsightsManager'
 
+// Scroll to hash component
+function ScrollToHash() {
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.hash) {
+      setTimeout(() => {
+        const element = document.querySelector(location.hash)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }, 100)
+    } else {
+      window.scrollTo(0, 0)
+    }
+  }, [location])
+
+  return null
+}
+
 function App() {
   return (
     <Router>
+      <ScrollToHash />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
@@ -27,6 +50,7 @@ function App() {
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/faqs" element={<FAQs />} />
+        <Route path="/resource-center" element={<ResourceCenter />} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
