@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Available time slots that admin can manage
+model AvailableSlot {
+  id          String   @id @default(uuid())
+  date        DateTime
+  time        String   // e.g., "10:00 AM", "2:00 PM"
+  isBooked    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("available_slots")
+}
+
+model ConsultationApplication {
+  id                      String   @id @default(uuid())
+  fullName                String
+  businessEmail           String
+  companyName             String
+  industrySector          String
+  currentBusinessStage    String
+  primaryServiceInterest  String
+  targetFundingAmount     String?
+  businessSummary         String   @db.Text
+  status                  String   @default("pending")
+  scheduledDate           DateTime // The date of the selected slot
+  scheduledTime           String   // The time of the selected slot (e.g., "10:00 AM")
+  submittedAt             DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@map("consultation_applications")
+}
+
+model LoanApplication {
+  id                    String   @id @default(uuid())
+  fullName              String
+  email                 String
+  phoneNumber           String
+  loanType              String
+  loanAmount            String
+  repaymentPeriod       String
+  
+  employmentStatus      String?
+  monthlyIncome         String?
+  loanPurpose           String?  @db.Text
+  
+  businessName          String?
+  businessRegistration  String?
+  yearEstablished       String?
+  monthlyRevenue        String?
+  businessPurpose       String?  @db.Text
+  
+  assetType             String?
+  assetValue            String?
+  assetDescription      String?  @db.Text
+  purposeOfAsset        String?  @db.Text
+  
+  status                String   @default("pending")
+  submittedAt           DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("loan_applications")
+}
+
+model ConsultationAdmin {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  role      String   @default("consultation")
+  createdAt DateTime @default(now())
+
+  @@map("consultation_admins")
+}
+
+model LoanAdmin {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  role      String   @default("loan")
+  createdAt DateTime @default(now())
+
+  @@map("loan_admins")
+}
+
+model ResourceDownload {
+  id            String   @id @default(uuid())
+  email         String
+  resourceId    String
+  resourceTitle String
+  downloadedAt  DateTime @default(now())
+
+  @@map("resource_downloads")
+}
+
+model FAQ {
+  id        String   @id @default(uuid())
+  question  String   @db.Text
+  answer    String   @db.Text
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+model Insight {
+  id          String   @id @default(uuid())
+  category    String
+  title       String
+  description String   @db.Text
+  image       String
+  content     String   @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("insights")
+}

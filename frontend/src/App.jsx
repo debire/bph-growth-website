@@ -12,10 +12,13 @@ import ResourceCenter from './pages/ResourceCenter'
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import ConsultationAdminLogin from './pages/admin/ConsultationAdminLogin'
 import ConsultationApplications from './pages/admin/ConsultationApplications'
+import LoanAdminLogin from './pages/admin/LoanAdminLogin'
 import LoanApplications from './pages/admin/LoanApplications'
 import FAQManager from './pages/admin/FAQManager'
 import InsightsManager from './pages/admin/InsightsManager'
+import SlotManagement from './pages/admin/SlotManagement' // ADD THIS
 
 // Scroll to hash component
 function ScrollToHash() {
@@ -55,8 +58,17 @@ function App() {
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        
+        {/* Consultation Admin Routes */}
+        <Route path="/admin/consultation-login" element={<ConsultationAdminLogin />} />
         <Route path="/admin/consultations" element={<ConsultationApplications />} />
+        <Route path="/admin/slots" element={<SlotManagement />} /> {/* ADD THIS */}
+        
+        {/* Loan Admin Routes */}
+        <Route path="/admin/loan-login" element={<LoanAdminLogin />} />
         <Route path="/admin/loans" element={<LoanApplications />} />
+        
+        {/* Other Admin Routes */}
         <Route path="/admin/faqs" element={<FAQManager />} />
         <Route path="/admin/insights" element={<InsightsManager />} />
       </Routes>
