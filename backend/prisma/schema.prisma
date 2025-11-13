@@ -3,24 +3,24 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 // Available time slots that admin can manage
 model AvailableSlot {
-  id          String   @id @default(uuid())
-  date        DateTime
-  time        String   // e.g., "10:00 AM", "2:00 PM"
-  isBooked    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  date      DateTime
+  time      String
+  isBooked  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("available_slots")
 }
 
 model ConsultationApplication {
-  id                      String   @id @default(uuid())
+  id                      String   @id @default(auto()) @map("_id") @db.ObjectId
   fullName                String
   businessEmail           String
   companyName             String
@@ -28,10 +28,10 @@ model ConsultationApplication {
   currentBusinessStage    String
   primaryServiceInterest  String
   targetFundingAmount     String?
-  businessSummary         String   @db.Text
+  businessSummary         String
   status                  String   @default("pending")
-  scheduledDate           DateTime // The date of the selected slot
-  scheduledTime           String   // The time of the selected slot (e.g., "10:00 AM")
+  scheduledDate           DateTime
+  scheduledTime           String
   submittedAt             DateTime @default(now())
   updatedAt               DateTime @updatedAt
 
@@ -39,7 +39,7 @@ model ConsultationApplication {
 }
 
 model LoanApplication {
-  id                    String   @id @default(uuid())
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   fullName              String
   email                 String
   phoneNumber           String
@@ -49,18 +49,18 @@ model LoanApplication {
   
   employmentStatus      String?
   monthlyIncome         String?
-  loanPurpose           String?  @db.Text
+  loanPurpose           String?
   
   businessName          String?
   businessRegistration  String?
   yearEstablished       String?
   monthlyRevenue        String?
-  businessPurpose       String?  @db.Text
+  businessPurpose       String?
   
   assetType             String?
   assetValue            String?
-  assetDescription      String?  @db.Text
-  purposeOfAsset        String?  @db.Text
+  assetDescription      String?
+  purposeOfAsset        String?
   
   status                String   @default("pending")
   submittedAt           DateTime @default(now())
@@ -70,7 +70,7 @@ model LoanApplication {
 }
 
 model ConsultationAdmin {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   username  String   @unique
   password  String
   role      String   @default("consultation")
@@ -80,7 +80,7 @@ model ConsultationAdmin {
 }
 
 model LoanAdmin {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   username  String   @unique
   password  String
   role      String   @default("loan")
@@ -90,7 +90,7 @@ model LoanAdmin {
 }
 
 model ResourceDownload {
-  id            String   @id @default(uuid())
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   email         String
   resourceId    String
   resourceTitle String
@@ -100,9 +100,9 @@ model ResourceDownload {
 }
 
 model FAQ {
-  id        String   @id @default(uuid())
-  question  String   @db.Text
-  answer    String   @db.Text
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  question  String
+  answer    String
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -111,12 +111,12 @@ model FAQ {
 }
 
 model Insight {
-  id          String   @id @default(uuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   category    String
   title       String
-  description String   @db.Text
+  description String
   image       String
-  content     String   @db.Text
+  content     String
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
