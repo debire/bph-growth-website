@@ -3,10 +3,13 @@ import AOS from 'aos'
 import 'aos/dist/aos.css'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import api from '../config/api'
 
 function FAQs() {
   const [showAll, setShowAll] = useState(false)
   const [openIndex, setOpenIndex] = useState(null)
+  const [faqs, setFaqs] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     AOS.init({
@@ -14,110 +17,28 @@ function FAQs() {
       once: true,
       easing: 'ease-out'
     })
+    fetchFAQs()
   }, [])
+
+  const fetchFAQs = async () => {
+    try {
+      const response = await api.get('/faqs')
+      
+      if (response.data.success) {
+        // Get only active FAQs
+        const activeFAQs = response.data.data.filter(faq => faq.isActive)
+        setFaqs(activeFAQs)
+      }
+    } catch (error) {
+      console.error('Error fetching FAQs:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index)
   }
-
-  const faqs = [
-    {
-      question: "What services does BPH Growth offer?",
-      answer: "We provide comprehensive business consulting including strategic planning, AI integration, business plan development, funding access (loans and equity financing), leadership development, and operational optimization tailored to your growth stage."
-    },
-    {
-      question: "How long does it take to get a loan approved?",
-      answer: "Our loan approval process is fast and efficient. Personal and business loans are typically processed within 2-24 hours, while asset financing may take 48-72 hours depending on documentation completeness."
-    },
-    {
-      question: "What are the loan amount ranges available?",
-      answer: "We offer flexible loan amounts ranging from ₦50,000 to ₦5,000,000 for personal loans, ₦50,000 to ₦1,000,000 for business loans, and up to ₦5,000,000 for asset financing, depending on your eligibility and requirements."
-    },
-    {
-      question: "Do I need collateral to apply for a loan?",
-      answer: "It depends on the loan type. Personal loans may require minimal collateral, while business loans typically need business documentation and guarantors. Asset financing loans are secured against the asset being financed."
-    },
-    {
-      question: "How does the business consulting process work?",
-      answer: "Our consulting process starts with an initial assessment (1-2 weeks), followed by strategic planning and implementation (3-6 months). We provide ongoing support, regular check-ins, and adjust strategies based on your progress and market changes."
-    },
-    {
-      question: "What documents do I need to apply for a loan?",
-      answer: "You'll need valid ID, BVN, proof of income, proof of residence, and bank statements. Business loans require additional documentation including business registration, tax ID, and business bank statements."
-    },
-    {
-      question: "How does 'The Growth Blueprint' ensure my plan is executable?",
-      answer: "We dedicate a phase to creating the Operational Execution Playbook—a high-value deliverable that provides specific system architecture, workflow designs, and process audits (Ops Diagnostics) necessary to implement the strategy without friction."
-    },
-    {
-      question: "What is the 'AI Governance Roadmap'?",
-      answer: "This consulting service goes beyond simply installing AI tools. We help you design the ethical, compliant, and data-secure frameworks necessary to integrate AI into your operations (as required by local and international standards)."
-    },
-    {
-      question: "Is the Business Clinic mandatory for loans?",
-      answer: "For high-risk products like Micro-Enterprise Trade Finance, a mandatory component of the Business Clinic Micro-Training is required before disbursement to ensure financial literacy and mitigate compliance risk."
-    },
-    {
-      question: "How does BPH Growth Fund determine eligibility for loans?",
-      answer: "We use a hybrid underwriting model. We look at standard factors (income verification) plus our proprietary data: 1. PlansDeck Data Scoring (for consulting clients), and 2. Cluster Risk Scoring (for Micro-Trade clients)."
-    },
-    {
-      question: "What is 'Systemic Efficiency Coaching' in the Business Clinic?",
-      answer: "It's the practical application of the mindset work. We combine visualization with tangible skill development in personal workflow optimization, digital system organization, and executive habit formation."
-    },
-    {
-      question: "Can I hire the Consulting Arm without taking a loan?",
-      answer: "Absolutely. The Consulting Services arm operates autonomously. You can hire us solely for strategy, operational execution, or training without any obligation to engage the Fund."
-    },
-    {
-      question: "What is the typical timeline for 'The Growth Blueprint'?",
-      answer: "The timeline typically ranges from 4 to 8 weeks, depending on the complexity of your business and the promptness of providing the required discovery materials."
-    },
-    {
-      question: "When will the P2P Marketplace be available?",
-      answer: "We are currently in the Pilot and Validation Phase of our lending products. We anticipate beginning the build-out and onboarding external retail investors for the P2P Debt Platform in the Mid-Term (Months 12-18)."
-    },
-    {
-      question: "Can you help with equity financing and investor connections?",
-      answer: "Yes! We provide access to angel investors and venture capital firms, help prepare investor-ready pitch decks and business plans, support due diligence processes, and guide you through negotiation strategies."
-    },
-    {
-      question: "What makes BPH Growth different from other consultants?",
-      answer: "We combine traditional business expertise with AI-augmented insights, offering data-driven strategies alongside personalized mentorship. Plus, we provide access to both consulting services and funding solutions in one place."
-    },
-    {
-      question: "What is the interest rate on loans?",
-      answer: "Our interest rates are competitive and vary by loan type. Personal loans start from 3% per month, business loans from 4% per month, and asset financing from 3% per month. Rates are customized based on loan amount, tenure, and risk assessment."
-    },
-    {
-      question: "Do you work with startups or only established businesses?",
-      answer: "We work with businesses at all stages—from early-stage startups seeking validation and funding to established companies looking to scale, pivot, or optimize their operations."
-    },
-    {
-      question: "What is the loan repayment tenure?",
-      answer: "We offer flexible repayment options ranging from 1 to 12 months depending on the loan type and amount. You can choose a tenure that aligns with your cash flow and financial planning."
-    },
-    {
-      question: "How much does your consulting service cost?",
-      answer: "Our consulting fees are customized based on your specific needs, business size, and engagement scope. We offer flexible packages and payment plans. Contact us at hello@bphgrowth.com for a personalized quote."
-    },
-    {
-      question: "Can I get both consulting and financing services?",
-      answer: "Absolutely! We offer integrated solutions where you can access strategic business consulting to build a bankable plan and then secure funding through our loan or equity financing options—all under one roof."
-    },
-    {
-      question: "What are the eligibility criteria for loans?",
-      answer: "You must be a Nigerian citizen aged 21-60 years, have a stable income or business revenue, possess valid identification and BVN, and provide required documentation. Business loans require additional business registration documents."
-    },
-    {
-      question: "Do you provide AI consulting and digital transformation services?",
-      answer: "Yes! We specialize in AI strategy consulting, AI bot development, digital transformation roadmaps, custom AI solutions, and provide training for teams and executives to leverage AI for competitive advantage."
-    },
-    {
-      question: "How can I get started with BPH Growth?",
-      answer: "Simply reach out to us via hello@bphgrowth.com, schedule a consultation through our website, or visit our office at 23 Durojaiye Street, Surulere, Lagos. We'll discuss your needs and recommend the best path forward."
-    }
-  ]
 
   // Show only first 6 FAQs by default
   const displayedFaqs = showAll ? faqs : faqs.slice(0, 6)
@@ -159,75 +80,97 @@ function FAQs() {
             </p>
           </div>
 
-          {/* FAQ Accordion */}
-          <div className="space-y-4 mb-12">
-            {displayedFaqs.map((faq, index) => (
-              <div key={index} className="border-b border-gray-300">
-                {/* Question Header */}
-                <button
-                  onClick={() => toggleFAQ(index)}
-                  className="w-full flex items-center justify-between py-5 text-left transition-colors"
-                >
-                  <h3 className="text-base lg:text-lg font-semibold pr-8">
-                    {faq.question}
-                  </h3>
-                  
-                  {/* Plus/Minus Icon */}
-                  <div className="shrink-0 w-6 h-6 flex items-center justify-center">
-                    {openIndex === index ? (
-                      // Minus icon
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                      </svg>
-                    ) : (
-                      // Plus icon
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                    )}
-                  </div>
-                </button>
-
-                {/* Answer - Expandable */}
-                <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    openIndex === index ? 'max-h-96 pb-5' : 'max-h-0'
-                  }`}
-                >
-                  <p className="text-sm lg:text-base text-gray-600 leading-relaxed pr-8">
-                    {faq.answer}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Load More Button */}
-          {!showAll && faqs.length > 6 && (
-            <div className="flex justify-center mt-8 lg:mt-12">
-              <button
-                onClick={() => setShowAll(true)}
-                className="bg-[#1a2332] text-white px-8 py-3 rounded-full text-base font-semibold hover:bg-[#2a3f52] transition-colors"
-              >
-                Load More
-              </button>
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1a2332]"></div>
             </div>
           )}
 
-          {/* Show Less Button */}
-          {showAll && (
-            <div className="flex justify-center mt-8 lg:mt-12">
-              <button
-                onClick={() => {
-                  setShowAll(false)
-                  setOpenIndex(null) // Close any open FAQs
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                }}
-                className="bg-gray-200 text-gray-800 px-8 py-3 rounded-full text-base font-semibold hover:bg-gray-300 transition-colors"
-              >
-                Show Less
-              </button>
+          {/* Empty State */}
+          {!loading && faqs.length === 0 && (
+            <div className="text-center py-20">
+              <svg className="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">No FAQs Available</h3>
+              <p className="text-gray-600">Check back soon for answers to common questions</p>
             </div>
+          )}
+
+          {/* FAQ Accordion */}
+          {!loading && faqs.length > 0 && (
+            <>
+              <div className="space-y-4 mb-12">
+                {displayedFaqs.map((faq, index) => (
+                  <div key={faq.id} className="border-b border-gray-300">
+                    {/* Question Header */}
+                    <button
+                      onClick={() => toggleFAQ(index)}
+                      className="w-full flex items-center justify-between py-5 text-left transition-colors"
+                    >
+                      <h3 className="text-base lg:text-lg font-semibold pr-8">
+                        {faq.question}
+                      </h3>
+                      
+                      {/* Plus/Minus Icon */}
+                      <div className="shrink-0 w-6 h-6 flex items-center justify-center">
+                        {openIndex === index ? (
+                          // Minus icon
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                          </svg>
+                        ) : (
+                          // Plus icon
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+
+                    {/* Answer - Expandable */}
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        openIndex === index ? 'max-h-96 pb-5' : 'max-h-0'
+                      }`}
+                    >
+                      <p className="text-sm lg:text-base text-gray-600 leading-relaxed pr-8">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Load More Button */}
+              {!showAll && faqs.length > 6 && (
+                <div className="flex justify-center mt-8 lg:mt-12">
+                  <button
+                    onClick={() => setShowAll(true)}
+                    className="bg-[#1a2332] text-white px-8 py-3 rounded-full text-base font-semibold hover:bg-[#2a3f52] transition-colors"
+                  >
+                    Load More
+                  </button>
+                </div>
+              )}
+
+              {/* Show Less Button */}
+              {showAll && (
+                <div className="flex justify-center mt-8 lg:mt-12">
+                  <button
+                    onClick={() => {
+                      setShowAll(false)
+                      setOpenIndex(null) // Close any open FAQs
+                      window.scrollTo({ top: 0, behavior: 'smooth' })
+                    }}
+                    className="bg-gray-200 text-gray-800 px-8 py-3 rounded-full text-base font-semibold hover:bg-gray-300 transition-colors"
+                  >
+                    Show Less
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>

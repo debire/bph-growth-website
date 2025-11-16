@@ -358,9 +358,6 @@ function BankablePlanForm() {
 
             {/* Available Time Slots */}
             <div className="lg:col-span-2">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Select Consultation Time Slot *
-              </label>
               {loadingSlots ? (
                 <div className="flex items-center justify-center py-4">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#1a2332]"></div>

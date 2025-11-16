@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken'
 
-export const verifyToken = (req, res, next) => {
+// Authenticate JWT token
+export const authenticateToken = (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1] // Bearer TOKEN
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1] // Bearer TOKEN
 
     if (!token) {
       return res.status(401).json({
@@ -11,47 +13,58 @@ export const verifyToken = (req, res, next) => {
       })
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    req.user = decoded
-    next()
+    // Verify token
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(403).json({
+          success: false,
+          message: 'Invalid or expired token'
+        })
+      }
+
+      req.user = decoded
+      next()
+    })
   } catch (error) {
     return res.status(401).json({
       success: false,
-      message: 'Invalid or expired token.'
+      message: 'Token authentication failed'
     })
   }
 }
 
-export const verifyConsultationAdmin = (req, res, next) => {
-  try {
-    if (req.user.role !== 'consultation') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Consultation admin only.'
-      })
-    }
+// Authorize consultation admin
+export const authorizeConsultationAdmin = (req, res, next) => {
+  if (req.user && req.user.role === 'consultation') {
     next()
-  } catch (error) {
+  } else {
     return res.status(403).json({
       success: false,
-      message: 'Authorization failed.'
+      message: 'Access denied. Consultation admin role required.'
     })
   }
 }
 
-export const verifyLoanAdmin = (req, res, next) => {
-  try {
-    if (req.user.role !== 'loan') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Loan admin only.'
-      })
-    }
+// Authorize loan admin
+export const authorizeLoanAdmin = (req, res, next) => {
+  if (req.user && req.user.role === 'loan') {
     next()
-  } catch (error) {
+  } else {
     return res.status(403).json({
       success: false,
-      message: 'Authorization failed.'
+      message: 'Access denied. Loan admin role required.'
+    })
+  }
+}
+
+// Authorize any admin
+export const authorizeAdmin = (req, res, next) => {
+  if (req.user && (req.user.role === 'consultation' || req.user.role === 'loan')) {
+    next()
+  } else {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Admin role required.'
     })
   }
 }

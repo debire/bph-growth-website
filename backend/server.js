@@ -3,13 +3,16 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { connectDatabase } from './src/config/database.js'
 import { errorHandler, notFound } from './src/middleware/errorHandler.js'
+import { createAdminAccounts } from './src/controllers/authController.js' // ADD THIS
 
 // Import routes
 import consultationRoutes from './src/routes/consultationRoutes.js'
 import loanRoutes from './src/routes/loanRoutes.js'
 import authRoutes from './src/routes/authRoutes.js'
 import resourceRoutes from './src/routes/resourceRoutes.js'
-import slotRoutes from './src/routes/slotRoutes.js' // ADD THIS
+import slotRoutes from './src/routes/slotRoutes.js'
+import insightRoutes from './src/routes/insightRoutes.js'
+import faqRoutes from './src/routes/faqRoutes.js'
 
 // Load environment variables
 dotenv.config()
@@ -17,8 +20,24 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 5000
 
-// Connect to database
-connectDatabase()
+// Initialize database and seed admin accounts
+async function initializeApp() {
+  try {
+    // Connect to database
+    await connectDatabase()
+    console.log('✅ Database connected successfully')
+    
+    // Create admin accounts
+    await createAdminAccounts()
+    
+  } catch (error) {
+    console.error('❌ Application initialization failed:', error)
+    process.exit(1)
+  }
+}
+
+// Initialize app
+initializeApp()
 
 // Middleware
 app.use(cors({
@@ -45,7 +64,7 @@ app.get('/', (req, res) => {
       loans: '/api/loans',
       auth: '/api/auth',
       resources: '/api/resources',
-      slots: '/api/slots' // ADD THIS
+      slots: '/api/slots'
     }
   })
 })
@@ -64,7 +83,9 @@ app.use('/api/consultations', consultationRoutes)
 app.use('/api/loans', loanRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/resources', resourceRoutes)
-app.use('/api/slots', slotRoutes) // ADD THIS
+app.use('/api/slots', slotRoutes)
+app.use('/api/insights', insightRoutes)
+app.use('/api/faqs', faqRoutes)
 
 // Error handling
 app.use(notFound)

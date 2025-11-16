@@ -1,107 +1,124 @@
 import { prisma } from '../config/database.js'
 import { sendEmail } from '../config/email.js'
 import { consultationUserTemplate, consultationAdminTemplate } from '../utils/emailTemplates.js'
-import { consultationSchema } from '../utils/validators.js'
 
 // Submit consultation application
 export const submitConsultation = async (req, res) => {
   try {
-    const consultationData = req.body
+    const {
+      fullName,
+      businessEmail,
+      companyName,
+      industrySector,
+      currentBusinessStage,
+      primaryServiceInterest,
+      targetFundingAmount,
+      businessSummary,
+      slotId
+    } = req.body
 
-    console.log('📥 Received consultation data:', consultationData)
+    console.log('📥 Consultation submission:', { 
+      fullName, 
+      businessEmail, 
+      slotId 
+    })
 
-    // Validate input
-    try {
-      consultationSchema.parse(consultationData)
-    } catch (validationError) {
-      console.error('❌ Validation error:', validationError.errors)
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        errors: validationError.errors.map(err => ({
-          field: err.path.join('.'),
-          message: err.message
-        }))
-      })
-    }
-
-    // Check if the selected slot exists and is available
+    // Get the slot details
     const slot = await prisma.availableSlot.findUnique({
-      where: { id: consultationData.slotId }
+      where: { id: slotId }
     })
 
     if (!slot) {
       return res.status(400).json({
         success: false,
-        message: 'Selected time slot not found'
+        message: 'Invalid time slot selected'
       })
     }
 
     if (slot.isBooked) {
       return res.status(400).json({
         success: false,
-        message: 'Selected time slot is no longer available'
+        message: 'This time slot has already been booked'
       })
     }
 
-    // Save consultation to database
+    // Create consultation application
     const consultation = await prisma.consultationApplication.create({
       data: {
-        fullName: consultationData.fullName,
-        businessEmail: consultationData.businessEmail,
-        companyName: consultationData.companyName,
-        industrySector: consultationData.industrySector,
-        currentBusinessStage: consultationData.currentBusinessStage,
-        primaryServiceInterest: consultationData.primaryServiceInterest,
-        targetFundingAmount: consultationData.targetFundingAmount || null,
-        businessSummary: consultationData.businessSummary,
+        fullName,
+        businessEmail,
+        companyName,
+        industrySector,
+        currentBusinessStage,
+        primaryServiceInterest,
+        targetFundingAmount: targetFundingAmount || null,
+        businessSummary,
         scheduledDate: slot.date,
-        scheduledTime: slot.time
+        scheduledTime: slot.time,
+        status: 'pending'
       }
     })
 
     // Mark slot as booked
     await prisma.availableSlot.update({
-      where: { id: slot.id },
+      where: { id: slotId },
       data: { isBooked: true }
     })
 
-    console.log('✅ Consultation saved:', consultation.id)
+    console.log('✅ Consultation created:', consultation.id)
 
-    // Send confirmation email to user
-    await sendEmail({
-      to: consultationData.businessEmail,
-      subject: 'Consultation Scheduled - BPH Growth',
-      html: consultationUserTemplate(consultation)
-    })
+    // Send confirmation emails (if Resend is configured)
+    try {
+      // Send to user
+      await sendEmail({
+        to: businessEmail,
+        subject: 'Consultation Scheduled - BPH Growth',
+        html: consultationUserTemplate({
+          ...consultation,
+          scheduledDate: slot.date,
+          scheduledTime: slot.time
+        })
+      })
 
-    // Send notification email to business
-    await sendEmail({
-      to: process.env.BUSINESS_EMAIL,
-      subject: `New Consultation Request from ${consultationData.companyName}`,
-      html: consultationAdminTemplate(consultation)
-    })
+      // Send to admin
+      await sendEmail({
+        to: process.env.BUSINESS_EMAIL,
+        subject: 'New Consultation Application',
+        html: consultationAdminTemplate({
+          ...consultation,
+          scheduledDate: slot.date,
+          scheduledTime: slot.time
+        })
+      })
+
+      console.log('✅ Emails sent successfully')
+    } catch (emailError) {
+      console.error('⚠️ Email sending failed:', emailError.message)
+      // Don't fail the request if email fails
+    }
 
     res.status(201).json({
       success: true,
-      message: 'Consultation request submitted successfully',
+      message: 'Consultation application submitted successfully',
       data: consultation
     })
   } catch (error) {
-    console.error('Error submitting consultation:', error)
+    console.error('❌ Error submitting consultation:', error)
     res.status(500).json({
       success: false,
-      message: 'Failed to submit consultation request',
+      message: 'Failed to submit consultation application',
       error: error.message
     })
   }
 }
 
-// Rest of your existing functions stay the same
+// Get all consultation applications (admin only)
 export const getAllConsultations = async (req, res) => {
   try {
     const consultations = await prisma.consultationApplication.findMany({
-      orderBy: { submittedAt: 'desc' }
+      orderBy: {
+        submittedAt: 'desc'
+      }
     })
 
     res.status(200).json({
@@ -118,35 +135,7 @@ export const getAllConsultations = async (req, res) => {
   }
 }
 
-export const getConsultationById = async (req, res) => {
-  try {
-    const { id } = req.params
-
-    const consultation = await prisma.consultationApplication.findUnique({
-      where: { id }
-    })
-
-    if (!consultation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Consultation not found'
-      })
-    }
-
-    res.status(200).json({
-      success: true,
-      data: consultation
-    })
-  } catch (error) {
-    console.error('Error fetching consultation:', error)
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch consultation',
-      error: error.message
-    })
-  }
-}
-
+// Approve consultation
 export const approveConsultation = async (req, res) => {
   try {
     const { id } = req.params
@@ -171,6 +160,7 @@ export const approveConsultation = async (req, res) => {
   }
 }
 
+// Deny consultation
 export const denyConsultation = async (req, res) => {
   try {
     const { id } = req.params
@@ -190,28 +180,6 @@ export const denyConsultation = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to deny consultation',
-      error: error.message
-    })
-  }
-}
-
-export const deleteConsultation = async (req, res) => {
-  try {
-    const { id } = req.params
-
-    await prisma.consultationApplication.delete({
-      where: { id }
-    })
-
-    res.status(200).json({
-      success: true,
-      message: 'Consultation deleted successfully'
-    })
-  } catch (error) {
-    console.error('Error deleting consultation:', error)
-    res.status(500).json({
-      success: false,
-      message: 'Failed to delete consultation',
       error: error.message
     })
   }

@@ -1,38 +1,53 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import api from '../config/api'
 
 function FAQ() {
   const [openIndex, setOpenIndex] = useState(null)
+  const [faqs, setFaqs] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchFAQs()
+  }, [])
+
+  const fetchFAQs = async () => {
+    try {
+      const response = await api.get('/faqs')
+      
+      if (response.data.success) {
+        // Get only first 6 active FAQs
+        const activeFAQs = response.data.data
+          .filter(faq => faq.isActive)
+          .slice(0, 6)
+        
+        setFaqs(activeFAQs)
+      }
+    } catch (error) {
+      console.error('Error fetching FAQs:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index)
   }
 
-  const faqs = [
-    {
-      question: "What services does BPH Growth offer?",
-      answer: "We provide comprehensive business consulting including strategic planning, AI integration, funding access, leadership development, and operational optimization tailored to your growth stage."
-    },
-    {
-      question: "How does 'The Growth Blueprint' ensure my plan is executable?",
-      answer: "We dedicate a phase to creating the Operational Execution Playbook—a high-value deliverable that provides specific system architecture, workflow designs, and process audits (Ops Diagnostics) necessary to implement the strategy without friction."
-    },
-    {
-      question: "What is the 'AI Governance Roadmap'?",
-      answer: "This consulting service goes beyond simply installing AI tools. We help you design the ethical, compliant, and data-secure frameworks necessary to integrate AI into your operations (as required by local and international standards)."
-    },
-    {
-      question: "Is the Business Clinic mandatory for loans?",
-      answer: "For high-risk products like Micro-Enterprise Trade Finance, a mandatory component of the Business Clinic Micro-Training is required before disbursement to ensure financial literacy and mitigate compliance risk."
-    },
-    {
-      question: "How does BPH Growth Fund determine eligibility for loans?",
-      answer: "We use a hybrid underwriting model. We look at standard factors (income verification) plus our proprietary data: 1. PlansDeck Data Scoring (for consulting clients), and 2. Cluster Risk Scoring (for Micro-Trade clients)."
-    },
-    {
-      question: "What is 'Systemic Efficiency Coaching' in the Business Clinic?",
-      answer: "It's the practical application of the mindset work. We combine visualization with tangible skill development in personal workflow optimization, digital system organization, and executive habit formation."
-    }
-  ]
+  if (loading) {
+    return (
+      <section className="py-16 px-8 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1a2332]"></div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (faqs.length === 0) {
+    return null // Don't show section if no FAQs
+  }
 
   return (
     <section className="py-16 px-8 bg-white">
@@ -48,7 +63,7 @@ function FAQ() {
         {/* Accordion */}
         <div className="space-y-4 mb-12">
           {faqs.map((faq, index) => (
-            <div key={index} className="border-b border-gray-300">
+            <div key={faq.id} className="border-b border-gray-300">
               {/* Question Header */}
               <button
                 onClick={() => toggleFAQ(index)}

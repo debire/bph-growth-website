@@ -1,22 +1,22 @@
 import express from 'express'
 import {
-  getAvailableSlots,
-  getAllSlots,
   createSlot,
   createMultipleSlots,
+  getAllSlots,
+  getAvailableSlots,
   deleteSlot
 } from '../controllers/slotController.js'
-import { verifyToken, verifyConsultationAdmin } from '../middleware/auth.js' // CHANGED THIS
+import { authenticateToken, authorizeConsultationAdmin } from '../middleware/auth.js' // FIX THIS LINE
 
 const router = express.Router()
 
-// Public route - get available slots for users
+// Public routes
 router.get('/available', getAvailableSlots)
 
-// Protected routes - admin only
-router.get('/all', verifyToken, getAllSlots) // CHANGED
-router.post('/create', verifyToken, verifyConsultationAdmin, createSlot) // CHANGED
-router.post('/create-multiple', verifyToken, verifyConsultationAdmin, createMultipleSlots) // CHANGED
-router.delete('/:id', verifyToken, verifyConsultationAdmin, deleteSlot) // CHANGED
+// Admin routes - require consultation admin authentication
+router.post('/create', authenticateToken, authorizeConsultationAdmin, createSlot)
+router.post('/create-multiple', authenticateToken, authorizeConsultationAdmin, createMultipleSlots)
+router.get('/all', authenticateToken, authorizeConsultationAdmin, getAllSlots)
+router.delete('/:id', authenticateToken, authorizeConsultationAdmin, deleteSlot)
 
 export default router

@@ -2,6 +2,47 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { prisma } from '../config/database.js'
 
+// CREATE ADMIN ACCOUNTS ON STARTUP
+export const createAdminAccounts = async () => {
+  try {
+    // Hash passwords
+    const consultationPasswordHash = await bcrypt.hash(
+      process.env.CONSULTATION_ADMIN_PASSWORD || 'consultation123',
+      10
+    )
+    const loanPasswordHash = await bcrypt.hash(
+      process.env.LOAN_ADMIN_PASSWORD || 'loan123',
+      10
+    )
+
+    // Create or update consultation admin
+    await prisma.consultationAdmin.upsert({
+      where: { username: process.env.CONSULTATION_ADMIN_USERNAME || 'consultation_admin' },
+      update: {},
+      create: {
+        username: process.env.CONSULTATION_ADMIN_USERNAME || 'consultation_admin',
+        password: consultationPasswordHash,
+        role: 'consultation'
+      }
+    })
+
+    // Create or update loan admin
+    await prisma.loanAdmin.upsert({
+      where: { username: process.env.LOAN_ADMIN_USERNAME || 'loan_admin' },
+      update: {},
+      create: {
+        username: process.env.LOAN_ADMIN_USERNAME || 'loan_admin',
+        password: loanPasswordHash,
+        role: 'loan'
+      }
+    })
+
+    console.log('✅ Admin accounts created/verified successfully')
+  } catch (error) {
+    console.error('❌ Error creating admin accounts:', error)
+  }
+}
+
 // Generate JWT token
 const generateToken = (user) => {
   return jwt.sign(

@@ -1,13 +1,11 @@
 import { prisma } from '../config/database.js'
-import { sendEmail } from '../config/email.js'
-import { resourceDownloadTemplate } from '../utils/emailTemplates.js'
 
-// Request resource download
-export const requestResourceDownload = async (req, res) => {
+// Track resource download
+export const trackDownload = async (req, res) => {
   try {
     const { email, resourceId, resourceTitle } = req.body
 
-    // Save download record
+    // Create download record
     const download = await prisma.resourceDownload.create({
       data: {
         email,
@@ -16,62 +14,57 @@ export const requestResourceDownload = async (req, res) => {
       }
     })
 
-    // Send resource to user's email
-    await sendEmail({
-      to: email,
-      subject: `Your Resource: ${resourceTitle}`,
-      html: resourceDownloadTemplate(email, resourceTitle)
-    })
-
-    // TODO: Attach actual file to email
-    // You'll need to implement file attachment with Resend
-    // or provide a download link to the file hosted on Cloudinary
-
-    res.status(200).json({
+    res.status(201).json({
       success: true,
-      message: 'Resource will be sent to your email shortly',
+      message: 'Download tracked successfully',
       data: download
     })
   } catch (error) {
-    console.error('Error requesting resource:', error)
+    console.error('Error tracking download:', error)
     res.status(500).json({
       success: false,
-      message: 'Failed to send resource',
+      message: 'Failed to track download',
       error: error.message
     })
   }
 }
 
-// Get all resource downloads (Admin)
-export const getAllResourceDownloads = async (req, res) => {
+// Get all downloads (admin only)
+export const getDownloads = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query
-    const skip = (page - 1) * limit
+    const downloads = await prisma.resourceDownload.findMany({
+      orderBy: {
+        downloadedAt: 'desc'
+      }
+    })
 
-    const [downloads, total] = await Promise.all([
-      prisma.resourceDownload.findMany({
-        skip: parseInt(skip),
-        take: parseInt(limit),
-        orderBy: { downloadedAt: 'desc' }
-      }),
-      prisma.resourceDownload.count()
-    ])
+    // Get download statistics
+    const stats = {
+      total: downloads.length,
+      byResource: {},
+      uniqueUsers: new Set(downloads.map(d => d.email)).size
+    }
+
+    // Count downloads by resource
+    downloads.forEach(download => {
+      if (!stats.byResource[download.resourceTitle]) {
+        stats.byResource[download.resourceTitle] = 0
+      }
+      stats.byResource[download.resourceTitle]++
+    })
 
     res.status(200).json({
       success: true,
-      data: downloads,
-      pagination: {
-        total,
-        page: parseInt(page),
-        limit: parseInt(limit),
-        totalPages: Math.ceil(total / limit)
+      data: {
+        downloads,
+        stats
       }
     })
   } catch (error) {
     console.error('Error fetching downloads:', error)
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch resource downloads',
+      message: 'Failed to fetch downloads',
       error: error.message
     })
   }

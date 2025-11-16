@@ -111,15 +111,16 @@ model FAQ {
 }
 
 model Insight {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  category    String
-  title       String
-  description String
-  image       String
-  content     String
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  category      String
+  title         String
+  description   String
+  image         String
+  imagePublicId String?  // ADD THIS LINE
+  content       String
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("insights")
 }
