@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminLayout from '../../components/admin/AdminLayout'
 import api from '../../config/api'
+import { getAdminAuth, getAdminRedirectPath } from '../../utils/adminAuth'
 
 function FAQManager() {
   const navigate = useNavigate()
@@ -13,19 +14,16 @@ function FAQManager() {
   const [submitting, setSubmitting] = useState(false)
   const [newFAQ, setNewFAQ] = useState({ question: '', answer: '' })
 
-  // Check authentication
+  // Check authentication - UPDATED
   useEffect(() => {
-    const isAuth = localStorage.getItem('consultationAdminAuth') || localStorage.getItem('adminAuthenticated')
-    const token = localStorage.getItem('consultationAdminToken')
+    const { isAuth, token } = getAdminAuth()
     
-    if (!isAuth) {
-      navigate('/admin/consultation-login')
+    if (!isAuth || !token) {
+      navigate(getAdminRedirectPath())
       return
     }
 
-    if (token) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    }
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
     
     fetchFAQs()
   }, [navigate])

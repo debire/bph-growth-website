@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminLayout from '../../components/admin/AdminLayout'
 import api from '../../config/api'
+import { getAdminAuth, getAdminRedirectPath } from '../../utils/adminAuth'
 
 function InsightsManager() {
   const navigate = useNavigate()
@@ -11,28 +12,39 @@ function InsightsManager() {
   const [isAddingInsight, setIsAddingInsight] = useState(false)
   const [editingInsight, setEditingInsight] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   
   const [newInsight, setNewInsight] = useState({
-    category: '',
     title: '',
-    description: '',
+    excerpt: '',
     content: '',
-    image: null
+    category: '',
+    author: '',
+    imageFile: null,
+    imageUrl: ''
   })
 
-  // Check authentication
+  const categories = [
+    'Business Strategy',
+    'Financial Planning',
+    'AI & Technology',
+    'Market Insights',
+    'Growth Tips',
+    'Case Studies',
+    'Industry News',
+    'Other'
+  ]
+
+  // Check authentication - UPDATED
   useEffect(() => {
-    const isAuth = localStorage.getItem('consultationAdminAuth') || localStorage.getItem('adminAuthenticated')
-    const token = localStorage.getItem('consultationAdminToken')
+    const { isAuth, token } = getAdminAuth()
     
-    if (!isAuth) {
-      navigate('/admin/consultation-login')
+    if (!isAuth || !token) {
+      navigate(getAdminRedirectPath())
       return
     }
 
-    if (token) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    }
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
     
     fetchInsights()
   }, [navigate])
@@ -41,7 +53,7 @@ function InsightsManager() {
     try {
       setLoading(true)
       setError(null)
-      const response = await api.get('/insights')
+      const response = await api.get('/insights/admin')
       
       if (response.data.success) {
         setInsights(response.data.data)
@@ -54,87 +66,114 @@ function InsightsManager() {
     }
   }
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file')
-        return
-      }
-      // Validate file size (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB')
-        return
-      }
-      setNewInsight({ ...newInsight, image: file })
-    }
-  }
+  const handleImageUpload = async (file) => {
+    if (!file) return null
 
-  const handleAddInsight = async () => {
-    if (!newInsight.category || !newInsight.title || !newInsight.description || !newInsight.content || !newInsight.image) {
-      alert('Please fill all fields and select an image')
-      return
-    }
-
-    setSubmitting(true)
+    setUploadingImage(true)
 
     try {
       const formData = new FormData()
-      formData.append('category', newInsight.category)
-      formData.append('title', newInsight.title)
-      formData.append('description', newInsight.description)
-      formData.append('content', newInsight.content)
-      formData.append('image', newInsight.image)
+      formData.append('image', file)
 
-      const response = await api.post('/insights', formData, {
+      const response = await api.post('/insights/upload-image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       })
 
       if (response.data.success) {
-        setInsights([response.data.data, ...insights])
-        setNewInsight({ category: '', title: '', description: '', content: '', image: null })
-        setIsAddingInsight(false)
-        alert('Insight created successfully!')
+        return response.data.data.imageUrl
       }
     } catch (err) {
-      console.error('Error creating insight:', err)
-      alert(err.response?.data?.message || 'Failed to create insight')
+      console.error('Error uploading image:', err)
+      alert(err.response?.data?.message || 'Failed to upload image')
+      return null
+    } finally {
+      setUploadingImage(false)
+    }
+  }
+
+  const handleAddInsight = async () => {
+    if (!newInsight.title || !newInsight.excerpt || !newInsight.content || !newInsight.category || !newInsight.author) {
+      alert('Please fill in all required fields')
+      return
+    }
+
+    setSubmitting(true)
+
+    try {
+      let imageUrl = newInsight.imageUrl
+
+      if (newInsight.imageFile) {
+        imageUrl = await handleImageUpload(newInsight.imageFile)
+        if (!imageUrl) {
+          setSubmitting(false)
+          return
+        }
+      }
+
+      const response = await api.post('/insights', {
+        title: newInsight.title,
+        excerpt: newInsight.excerpt,
+        content: newInsight.content,
+        category: newInsight.category,
+        author: newInsight.author,
+        imageUrl
+      })
+
+      if (response.data.success) {
+        setInsights([response.data.data, ...insights])
+        setNewInsight({
+          title: '',
+          excerpt: '',
+          content: '',
+          category: '',
+          author: '',
+          imageFile: null,
+          imageUrl: ''
+        })
+        setIsAddingInsight(false)
+        alert('Insight added successfully!')
+      }
+    } catch (err) {
+      console.error('Error adding insight:', err)
+      alert(err.response?.data?.message || 'Failed to add insight')
     } finally {
       setSubmitting(false)
     }
   }
 
   const handleUpdateInsight = async () => {
-    if (!editingInsight.category || !editingInsight.title || !editingInsight.description || !editingInsight.content) {
-      alert('Please fill all required fields')
+    if (!editingInsight.title || !editingInsight.excerpt || !editingInsight.content || !editingInsight.category || !editingInsight.author) {
+      alert('Please fill in all required fields')
       return
     }
 
     setSubmitting(true)
 
     try {
-      const formData = new FormData()
-      formData.append('category', editingInsight.category)
-      formData.append('title', editingInsight.title)
-      formData.append('description', editingInsight.description)
-      formData.append('content', editingInsight.content)
-      formData.append('isActive', editingInsight.isActive)
-      
-      if (editingInsight.newImage) {
-        formData.append('image', editingInsight.newImage)
+      let imageUrl = editingInsight.imageUrl
+
+      if (editingInsight.newImageFile) {
+        imageUrl = await handleImageUpload(editingInsight.newImageFile)
+        if (!imageUrl) {
+          setSubmitting(false)
+          return
+        }
       }
 
-      const response = await api.put(`/insights/${editingInsight.id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      const response = await api.put(`/insights/${editingInsight.id}`, {
+        title: editingInsight.title,
+        excerpt: editingInsight.excerpt,
+        content: editingInsight.content,
+        category: editingInsight.category,
+        author: editingInsight.author,
+        imageUrl,
+        isActive: editingInsight.isActive
       })
 
       if (response.data.success) {
-        setInsights(insights.map(insight => 
+        setInsights(insights.map(insight =>
           insight.id === editingInsight.id ? response.data.data : insight
         ))
         setEditingInsight(null)
@@ -149,7 +188,7 @@ function InsightsManager() {
   }
 
   const handleDeleteInsight = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this insight? This will also delete the associated image from Cloudinary.')) {
+    if (!window.confirm('Are you sure you want to delete this insight?')) {
       return
     }
 
@@ -171,7 +210,7 @@ function InsightsManager() {
       const response = await api.patch(`/insights/${id}/toggle`)
 
       if (response.data.success) {
-        setInsights(insights.map(insight => 
+        setInsights(insights.map(insight =>
           insight.id === id ? response.data.data : insight
         ))
         alert(response.data.message)
@@ -186,7 +225,10 @@ function InsightsManager() {
     <AdminLayout>
       <div>
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Insights Manager</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">Insights Manager</h1>
+            <p className="text-gray-600 mt-1">Create and manage blog posts and insights</p>
+          </div>
           <button
             onClick={() => setIsAddingInsight(true)}
             className="bg-[#60a5fa] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#3b82f6] transition-colors flex items-center gap-2"
@@ -198,7 +240,6 @@ function InsightsManager() {
           </button>
         </div>
 
-        {/* Loading State */}
         {loading && (
           <div className="bg-white rounded-xl shadow-md p-8 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
@@ -206,66 +247,70 @@ function InsightsManager() {
           </div>
         )}
 
-        {/* Error State */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
             <p className="text-red-600">{error}</p>
+            <button
+              onClick={fetchInsights}
+              className="mt-2 text-red-700 underline hover:text-red-800"
+            >
+              Try again
+            </button>
           </div>
         )}
 
-        {/* Empty State */}
         {!loading && !error && insights.length === 0 && (
           <div className="bg-white rounded-xl shadow-md p-8 text-center">
             <p className="text-gray-600 text-lg">No insights yet.</p>
             <p className="text-gray-500 text-sm mt-2">Create your first insight to get started.</p>
           </div>
         )}
-
-        {/* Insights List */}
         {!loading && !error && insights.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {insights.map((insight) => (
-              <div key={insight.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                {/* Image */}
-                <div className="h-48 overflow-hidden bg-gray-200">
+              <div key={insight.id} className="bg-white rounded-xl shadow-md overflow-hidden">
+                {insight.imageUrl && (
                   <img
-                    src={insight.image}
+                    src={insight.imageUrl}
                     alt={insight.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-48 object-cover"
                   />
-                </div>
-
-                {/* Content */}
+                )}
                 <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold text-blue-600 uppercase">{insight.category}</span>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                      {insight.category}
+                    </span>
                     <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                       insight.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                     }`}>
                       {insight.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
+                  <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
+                    {insight.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    {insight.excerpt}
+                  </p>
+                  <p className="text-xs text-gray-500 mb-4">By {insight.author}</p>
 
-                  <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">{insight.title}</h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{insight.description}</p>
-
-                  {/* Actions */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setEditingInsight({ ...insight, newImage: null })}
-                      className="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg hover:bg-blue-100 transition-colors text-sm font-semibold"
+                      onClick={() => setEditingInsight({ ...insight, newImageFile: null })}
+                      className="flex-1 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => toggleInsightStatus(insight.id)}
-                      className="flex-1 bg-yellow-50 text-yellow-600 py-2 rounded-lg hover:bg-yellow-100 transition-colors text-sm font-semibold"
+                      className="flex-1 py-2 text-sm text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
                     >
-                      {insight.isActive ? 'Hide' : 'Show'}
+                      {insight.isActive ? 'Deactivate' : 'Activate'}
                     </button>
                     <button
                       onClick={() => handleDeleteInsight(insight.id)}
-                      className="bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors text-sm font-semibold"
+                      className="flex-1 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     >
                       Delete
                     </button>
@@ -285,7 +330,15 @@ function InsightsManager() {
                 <button
                   onClick={() => {
                     setIsAddingInsight(false)
-                    setNewInsight({ category: '', title: '', description: '', content: '', image: null })
+                    setNewInsight({
+                      title: '',
+                      excerpt: '',
+                      content: '',
+                      category: '',
+                      author: '',
+                      imageFile: null,
+                      imageUrl: ''
+                    })
                   }}
                   className="text-gray-400 hover:text-gray-600"
                   disabled={submitting}
@@ -296,17 +349,20 @@ function InsightsManager() {
                 </button>
               </div>
 
-              <div className="p-6 space-y-4">
+              <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
-                  <input
-                    type="text"
+                  <select
                     value={newInsight.category}
                     onChange={(e) => setNewInsight({ ...newInsight, category: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#60a5fa]"
-                    placeholder="e.g., Business Strategy, Technology, Leadership"
                     disabled={submitting}
-                  />
+                  >
+                    <option value="">Select category</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
@@ -322,13 +378,25 @@ function InsightsManager() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Author *</label>
+                  <input
+                    type="text"
+                    value={newInsight.author}
+                    onChange={(e) => setNewInsight({ ...newInsight, author: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#60a5fa]"
+                    placeholder="Enter author name"
+                    disabled={submitting}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Excerpt *</label>
                   <textarea
-                    value={newInsight.description}
-                    onChange={(e) => setNewInsight({ ...newInsight, description: e.target.value })}
-                    rows="3"
+                    value={newInsight.excerpt}
+                    onChange={(e) => setNewInsight({ ...newInsight, excerpt: e.target.value })}
+                    rows="2"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#60a5fa] resize-none"
-                    placeholder="Brief description of the insight"
+                    placeholder="Brief summary (shown in cards)"
                     disabled={submitting}
                   />
                 </div>
@@ -340,22 +408,31 @@ function InsightsManager() {
                     onChange={(e) => setNewInsight({ ...newInsight, content: e.target.value })}
                     rows="8"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#60a5fa] resize-none"
-                    placeholder="Full content of the insight"
+                    placeholder="Full article content"
                     disabled={submitting}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Featured Image * (Max 5MB)</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Featured Image (Optional)
+                  </label>
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={handleImageChange}
+                    onChange={(e) => {
+                      const file = e.target.files[0]
+                      if (file) {
+                        setNewInsight({ ...newInsight, imageFile: file })
+                      }
+                    }}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#60a5fa]"
-                    disabled={submitting}
+                    disabled={submitting || uploadingImage}
                   />
-                  {newInsight.image && (
-                    <p className="text-sm text-green-600 mt-2">✓ {newInsight.image.name}</p>
+                  {newInsight.imageFile && (
+                    <p className="text-sm text-green-600 mt-2">
+                      ✓ {newInsight.imageFile.name}
+                    </p>
                   )}
                 </div>
               </div>
@@ -364,7 +441,15 @@ function InsightsManager() {
                 <button
                   onClick={() => {
                     setIsAddingInsight(false)
-                    setNewInsight({ category: '', title: '', description: '', content: '', image: null })
+                    setNewInsight({
+                      title: '',
+                      excerpt: '',
+                      content: '',
+                      category: '',
+                      author: '',
+                      imageFile: null,
+                      imageUrl: ''
+                    })
                   }}
                   className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
                   disabled={submitting}
@@ -373,10 +458,10 @@ function InsightsManager() {
                 </button>
                 <button
                   onClick={handleAddInsight}
-                  disabled={submitting}
+                  disabled={submitting || uploadingImage}
                   className="flex-1 bg-[#60a5fa] text-white py-3 rounded-lg font-semibold hover:bg-[#3b82f6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submitting ? 'Creating...' : 'Create Insight'}
+                  {uploadingImage ? 'Uploading Image...' : submitting ? 'Adding...' : 'Add Insight'}
                 </button>
               </div>
             </div>
@@ -400,16 +485,19 @@ function InsightsManager() {
                 </button>
               </div>
 
-              <div className="p-6 space-y-4">
+              <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
-                  <input
-                    type="text"
+                  <select
                     value={editingInsight.category}
                     onChange={(e) => setEditingInsight({ ...editingInsight, category: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#60a5fa]"
                     disabled={submitting}
-                  />
+                  >
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
@@ -424,11 +512,22 @@ function InsightsManager() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Author *</label>
+                  <input
+                    type="text"
+                    value={editingInsight.author}
+                    onChange={(e) => setEditingInsight({ ...editingInsight, author: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#60a5fa]"
+                    disabled={submitting}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Excerpt *</label>
                   <textarea
-                    value={editingInsight.description}
-                    onChange={(e) => setEditingInsight({ ...editingInsight, description: e.target.value })}
-                    rows="3"
+                    value={editingInsight.excerpt}
+                    onChange={(e) => setEditingInsight({ ...editingInsight, excerpt: e.target.value })}
+                    rows="2"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#60a5fa] resize-none"
                     disabled={submitting}
                   />
@@ -447,7 +546,14 @@ function InsightsManager() {
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Current Image</label>
-                  <img src={editingInsight.image} alt="Current" className="w-32 h-32 object-cover rounded-lg mb-2" />
+                  {editingInsight.imageUrl && (
+                    <img
+                      src={editingInsight.imageUrl}
+                      alt="Current"
+                      className="w-32 h-32 object-cover rounded-lg mb-2"
+                    />
+                  )}
+                  
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Replace Image (Optional)</label>
                   <input
                     type="file"
@@ -455,14 +561,16 @@ function InsightsManager() {
                     onChange={(e) => {
                       const file = e.target.files[0]
                       if (file) {
-                        setEditingInsight({ ...editingInsight, newImage: file })
+                        setEditingInsight({ ...editingInsight, newImageFile: file })
                       }
                     }}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#60a5fa]"
-                    disabled={submitting}
+                    disabled={submitting || uploadingImage}
                   />
-                  {editingInsight.newImage && (
-                    <p className="text-sm text-green-600 mt-2">✓ New image: {editingInsight.newImage.name}</p>
+                  {editingInsight.newImageFile && (
+                    <p className="text-sm text-green-600 mt-2">
+                      ✓ New image: {editingInsight.newImageFile.name}
+                    </p>
                   )}
                 </div>
               </div>
@@ -477,10 +585,10 @@ function InsightsManager() {
                 </button>
                 <button
                   onClick={handleUpdateInsight}
-                  disabled={submitting}
+                  disabled={submitting || uploadingImage}
                   className="flex-1 bg-[#60a5fa] text-white py-3 rounded-lg font-semibold hover:bg-[#3b82f6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submitting ? 'Updating...' : 'Update Insight'}
+                  {uploadingImage ? 'Uploading Image...' : submitting ? 'Updating...' : 'Update Insight'}
                 </button>
               </div>
             </div>

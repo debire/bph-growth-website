@@ -4,27 +4,17 @@ import { uploadToCloudinary, deleteFromCloudinary } from '../utils/uploadHelper.
 // Create new insight with image upload
 export const createInsight = async (req, res) => {
   try {
-    const { category, title, description, content } = req.body
-
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'Image is required'
-      })
-    }
-
-    // Upload image to Cloudinary
-    const uploadResult = await uploadToCloudinary(req.file, 'insights')
+    const { category, title, excerpt, content, author, imageUrl } = req.body
 
     // Create insight in database
     const insight = await prisma.insight.create({
       data: {
         category,
         title,
-        description,
+        excerpt,
         content,
-        image: uploadResult.secure_url,
-        imagePublicId: uploadResult.public_id,
+        author,
+        imageUrl: imageUrl || '',
         isActive: true
       }
     })
@@ -44,11 +34,32 @@ export const createInsight = async (req, res) => {
   }
 }
 
-// Get all insights (public)
+// Get all insights (public - only active)
 export const getAllInsights = async (req, res) => {
   try {
     const insights = await prisma.insight.findMany({
       where: { isActive: true },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    res.status(200).json({
+      success: true,
+      data: insights
+    })
+  } catch (error) {
+    console.error('Error fetching insights:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch insights',
+      error: error.message
+    })
+  }
+}
+
+// Get all insights for admin (including inactive) - NEW FUNCTION
+export const getAllInsightsAdmin = async (req, res) => {
+  try {
+    const insights = await prisma.insight.findMany({
       orderBy: { createdAt: 'desc' }
     })
 
@@ -96,11 +107,42 @@ export const getInsightById = async (req, res) => {
   }
 }
 
+// Upload image to Cloudinary
+export const uploadImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Image file is required'
+      })
+    }
+
+    // Upload image to Cloudinary
+    const uploadResult = await uploadToCloudinary(req.file, 'insights')
+
+    res.status(200).json({
+      success: true,
+      message: 'Image uploaded successfully',
+      data: {
+        imageUrl: uploadResult.secure_url,
+        imagePublicId: uploadResult.public_id
+      }
+    })
+  } catch (error) {
+    console.error('Error uploading image:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Failed to upload image',
+      error: error.message
+    })
+  }
+}
+
 // Update insight
 export const updateInsight = async (req, res) => {
   try {
     const { id } = req.params
-    const { category, title, description, content, isActive } = req.body
+    const { category, title, excerpt, content, author, imageUrl, isActive } = req.body
 
     // Check if insight exists
     const existingInsight = await prisma.insight.findUnique({
@@ -114,32 +156,16 @@ export const updateInsight = async (req, res) => {
       })
     }
 
-    let imageUrl = existingInsight.image
-    let imagePublicId = existingInsight.imagePublicId
-
-    // If new image is uploaded, upload to Cloudinary and delete old one
-    if (req.file) {
-      // Delete old image from Cloudinary
-      if (existingInsight.imagePublicId) {
-        await deleteFromCloudinary(existingInsight.imagePublicId)
-      }
-
-      // Upload new image
-      const uploadResult = await uploadToCloudinary(req.file, 'insights')
-      imageUrl = uploadResult.secure_url
-      imagePublicId = uploadResult.public_id
-    }
-
     // Update insight
     const insight = await prisma.insight.update({
       where: { id },
       data: {
         category,
         title,
-        description,
+        excerpt,
         content,
-        image: imageUrl,
-        imagePublicId,
+        author,
+        imageUrl: imageUrl || existingInsight.imageUrl,
         isActive
       }
     })
@@ -164,7 +190,7 @@ export const deleteInsight = async (req, res) => {
   try {
     const { id } = req.params
 
-    // Get insight to find image public ID
+    // Get insight
     const insight = await prisma.insight.findUnique({
       where: { id }
     })
@@ -174,11 +200,6 @@ export const deleteInsight = async (req, res) => {
         success: false,
         message: 'Insight not found'
       })
-    }
-
-    // Delete image from Cloudinary
-    if (insight.imagePublicId) {
-      await deleteFromCloudinary(insight.imagePublicId)
     }
 
     // Delete insight from database

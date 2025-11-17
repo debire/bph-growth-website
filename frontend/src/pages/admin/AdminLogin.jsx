@@ -1,24 +1,35 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import api from '../../config/api'
 
 function AdminLogin() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    
-    // TODO: Replace with actual authentication logic from backend
-    // For now, using a simple password check (backend will handle this properly)
-    const TEMP_PASSWORD = 'admin123' // This will be replaced by backend authentication
-    
-    if (password === TEMP_PASSWORD) {
-      // TODO: Backend will provide proper token/session
-      localStorage.setItem('adminAuthenticated', 'true')
-      navigate('/admin/dashboard')
-    } else {
-      setError('Invalid password. Please try again.')
+    setLoading(true)
+    setError('')
+
+    try {
+      const response = await api.post('/auth/admin/login', { password })
+
+      if (response.data.success) {
+        // Store token and auth flag
+        localStorage.setItem('adminToken', response.data.token)
+        localStorage.setItem('adminAuthenticated', 'true')
+        
+        // Set default authorization header
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+        
+        navigate('/admin/dashboard')
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Invalid password. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -46,6 +57,7 @@ function AdminLogin() {
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#60a5fa]"
               placeholder="Enter admin password"
               required
+              disabled={loading}
             />
           </div>
 
@@ -57,9 +69,10 @@ function AdminLogin() {
 
           <button
             type="submit"
-            className="w-full bg-[#60a5fa] text-white py-3 rounded-lg font-semibold hover:bg-[#3b82f6] transition-colors"
+            disabled={loading}
+            className="w-full bg-[#60a5fa] text-white py-3 rounded-lg font-semibold hover:bg-[#3b82f6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 

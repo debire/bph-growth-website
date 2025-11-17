@@ -3,7 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { connectDatabase } from './src/config/database.js'
 import { errorHandler, notFound } from './src/middleware/errorHandler.js'
-import { createAdminAccounts } from './src/controllers/authController.js' // ADD THIS
+import { createAdminAccounts } from './src/controllers/authController.js'
 
 // Import routes
 import consultationRoutes from './src/routes/consultationRoutes.js'

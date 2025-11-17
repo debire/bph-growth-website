@@ -11,7 +11,10 @@ export const uploadToCloudinary = async (filePath, folder = 'resources') => {
   try {
     const result = await cloudinary.uploader.upload(filePath, {
       folder: `bph-growth/${folder}`,
-      resource_type: 'auto',
+      resource_type: 'raw',  // CHANGED: Force raw for all non-images
+      type: 'upload',
+      access_mode: 'public',
+      invalidate: true  // Clear cache
     })
 
     console.log('✅ File uploaded to Cloudinary:', result.secure_url)
@@ -57,11 +60,41 @@ export const uploadImageToCloudinary = async (fileBuffer, folder = 'insights') =
 // Delete file from Cloudinary
 export const deleteFromCloudinary = async (publicId) => {
   try {
-    const result = await cloudinary.uploader.destroy(publicId)
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: 'raw'
+    })
     console.log('✅ File deleted from Cloudinary:', publicId)
     return result
   } catch (error) {
     console.error('❌ Cloudinary delete error:', error)
+    throw error
+  }
+}
+
+// NEW: Generate download URL with attachment flag
+export const generateDownloadUrl = (publicId, filename) => {
+  try {
+    // Determine resource type based on public_id folder
+    let resourceType = 'raw'
+    
+    // If it's in resources folder, use raw type
+    if (publicId.includes('resources')) {
+      resourceType = 'raw'
+    }
+    
+    // Generate a signed URL with download flag
+    const url = cloudinary.url(publicId, {
+      resource_type: resourceType,
+      type: 'upload',
+      flags: 'attachment',
+      secure: true,
+      sign_url: true
+    })
+    
+    console.log('✅ Generated download URL for:', publicId)
+    return url
+  } catch (error) {
+    console.error('❌ Error generating download URL:', error)
     throw error
   }
 }

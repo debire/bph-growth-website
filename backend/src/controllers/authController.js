@@ -6,6 +6,10 @@ import { prisma } from '../config/database.js'
 export const createAdminAccounts = async () => {
   try {
     // Hash passwords
+    const adminPasswordHash = await bcrypt.hash(
+      process.env.ADMIN_PASSWORD || 'admin123',
+      10
+    )
     const consultationPasswordHash = await bcrypt.hash(
       process.env.CONSULTATION_ADMIN_PASSWORD || 'consultation123',
       10
@@ -15,6 +19,17 @@ export const createAdminAccounts = async () => {
       10
     )
 
+    // Create or update main admin
+    await prisma.admin.upsert({
+      where: { username: process.env.ADMIN_USERNAME || 'admin' },
+      update: {},
+      create: {
+        username: process.env.ADMIN_USERNAME || 'admin',
+        password: adminPasswordHash,
+        role: 'admin'
+      }
+    })
+
     // Create or update consultation admin
     await prisma.consultationAdmin.upsert({
       where: { username: process.env.CONSULTATION_ADMIN_USERNAME || 'consultation_admin' },
@@ -22,7 +37,7 @@ export const createAdminAccounts = async () => {
       create: {
         username: process.env.CONSULTATION_ADMIN_USERNAME || 'consultation_admin',
         password: consultationPasswordHash,
-        role: 'consultation'
+        role: 'consultation_admin'
       }
     })
 
@@ -33,7 +48,7 @@ export const createAdminAccounts = async () => {
       create: {
         username: process.env.LOAN_ADMIN_USERNAME || 'loan_admin',
         password: loanPasswordHash,
-        role: 'loan'
+        role: 'loan_admin'
       }
     })
 
@@ -50,6 +65,56 @@ const generateToken = (user) => {
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   )
+}
+
+// Main Admin Login
+export const adminLogin = async (req, res) => {
+  try {
+    const { password } = req.body
+
+    // Find admin (using default username 'admin')
+    const admin = await prisma.admin.findUnique({
+      where: { username: 'admin' }
+    })
+
+    if (!admin) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid password'
+      })
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, admin.password)
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid password'
+      })
+    }
+
+    // Generate token
+    const token = generateToken(admin)
+
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      token,
+      user: {
+        id: admin.id,
+        username: admin.username,
+        role: admin.role
+      }
+    })
+  } catch (error) {
+    console.error('Admin login error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Login failed',
+      error: error.message
+    })
+  }
 }
 
 // Consultation Admin Login

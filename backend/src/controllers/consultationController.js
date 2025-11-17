@@ -1,6 +1,11 @@
 import { prisma } from '../config/database.js'
 import { sendEmail } from '../config/email.js'
-import { consultationUserTemplate, consultationAdminTemplate } from '../utils/emailTemplates.js'
+import { 
+  consultationUserTemplate, 
+  consultationAdminTemplate,
+  consultationApprovalTemplate,
+  consultationDenialTemplate
+} from '../utils/emailTemplates.js'
 
 // Submit consultation application
 export const submitConsultation = async (req, res) => {
@@ -67,7 +72,7 @@ export const submitConsultation = async (req, res) => {
 
     console.log('✅ Consultation created:', consultation.id)
 
-    // Send confirmation emails (if Resend is configured)
+    // Send confirmation emails
     try {
       // Send to user
       await sendEmail({
@@ -91,7 +96,7 @@ export const submitConsultation = async (req, res) => {
         })
       })
 
-      console.log('✅ Emails sent successfully')
+      console.log('✅ Confirmation emails sent successfully')
     } catch (emailError) {
       console.error('⚠️ Email sending failed:', emailError.message)
       // Don't fail the request if email fails
@@ -145,6 +150,26 @@ export const approveConsultation = async (req, res) => {
       data: { status: 'approved' }
     })
 
+    console.log('✅ Consultation approved:', consultation.id)
+
+    // Send approval email to user
+    try {
+      await sendEmail({
+        to: consultation.businessEmail,
+        subject: 'Consultation Approved - BPH Growth',
+        html: consultationApprovalTemplate({
+          fullName: consultation.fullName,
+          scheduledDate: consultation.scheduledDate,
+          scheduledTime: consultation.scheduledTime,
+          companyName: consultation.companyName
+        })
+      })
+
+      console.log('✅ Approval email sent to:', consultation.businessEmail)
+    } catch (emailError) {
+      console.error('⚠️ Approval email failed:', emailError.message)
+    }
+
     res.status(200).json({
       success: true,
       message: 'Consultation approved',
@@ -169,6 +194,24 @@ export const denyConsultation = async (req, res) => {
       where: { id },
       data: { status: 'denied' }
     })
+
+    console.log('❌ Consultation denied:', consultation.id)
+
+    // Send denial email to user
+    try {
+      await sendEmail({
+        to: consultation.businessEmail,
+        subject: 'Consultation Status Update - BPH Growth',
+        html: consultationDenialTemplate({
+          fullName: consultation.fullName,
+          companyName: consultation.companyName
+        })
+      })
+
+      console.log('✅ Denial email sent to:', consultation.businessEmail)
+    } catch (emailError) {
+      console.error('⚠️ Denial email failed:', emailError.message)
+    }
 
     res.status(200).json({
       success: true,

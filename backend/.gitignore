@@ -35,3 +35,11 @@ Thumbs.db
 
 # Testing
 coverage/
+
+# Temporary upload files (before processing)
+uploads/*
+!uploads/.gitkeep
+
+# Public resource files (actual documents users download)
+public/resources/*
+!public/resources/.gitkeep
