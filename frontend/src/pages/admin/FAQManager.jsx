@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import AdminLayout from '../../components/admin/AdminLayout'
 import api from '../../config/api'
 import { getAdminAuth, getAdminRedirectPath } from '../../utils/adminAuth'
+import { useNotification } from '../../context/NotificationContext'
 
 function FAQManager() {
   const navigate = useNavigate()
+  const { showSuccess, showError } = useNotification()
   const [faqs, setFaqs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -14,7 +16,7 @@ function FAQManager() {
   const [submitting, setSubmitting] = useState(false)
   const [newFAQ, setNewFAQ] = useState({ question: '', answer: '' })
 
-  // Check authentication - UPDATED
+  // Check authentication
   useEffect(() => {
     const { isAuth, token } = getAdminAuth()
     
@@ -47,7 +49,10 @@ function FAQManager() {
 
   const handleAddFAQ = async () => {
     if (!newFAQ.question || !newFAQ.answer) {
-      alert('Please fill in both question and answer')
+      showError(
+        'Missing Information',
+        'Please fill in both question and answer'
+      )
       return
     }
 
@@ -60,11 +65,21 @@ function FAQManager() {
         setFaqs([response.data.data, ...faqs])
         setNewFAQ({ question: '', answer: '' })
         setIsAddingFAQ(false)
-        alert('FAQ added successfully!')
+        
+        // Show success notification
+        showSuccess(
+          'FAQ uploaded successfully',
+          'Check FAQ page'
+        )
       }
     } catch (err) {
       console.error('Error adding FAQ:', err)
-      alert(err.response?.data?.message || 'Failed to add FAQ')
+      
+      // Show error notification
+      showError(
+        'FAQ upload was unsuccessful',
+        'Refresh and try again'
+      )
     } finally {
       setSubmitting(false)
     }
@@ -72,7 +87,10 @@ function FAQManager() {
 
   const handleUpdateFAQ = async () => {
     if (!editingFAQ.question || !editingFAQ.answer) {
-      alert('Please fill in both question and answer')
+      showError(
+        'Missing Information',
+        'Please fill in both question and answer'
+      )
       return
     }
 
@@ -90,11 +108,21 @@ function FAQManager() {
           faq.id === editingFAQ.id ? response.data.data : faq
         ))
         setEditingFAQ(null)
-        alert('FAQ updated successfully!')
+        
+        // Show success notification
+        showSuccess(
+          'FAQ updated successfully',
+          'Changes have been saved'
+        )
       }
     } catch (err) {
       console.error('Error updating FAQ:', err)
-      alert(err.response?.data?.message || 'Failed to update FAQ')
+      
+      // Show error notification
+      showError(
+        'Failed to update FAQ',
+        'Please refresh and try again'
+      )
     } finally {
       setSubmitting(false)
     }
@@ -110,11 +138,21 @@ function FAQManager() {
       
       if (response.data.success) {
         setFaqs(faqs.filter(faq => faq.id !== id))
-        alert('FAQ deleted successfully!')
+        
+        // Show success notification
+        showSuccess(
+          'FAQ deleted successfully',
+          'The FAQ has been removed'
+        )
       }
     } catch (err) {
       console.error('Error deleting FAQ:', err)
-      alert(err.response?.data?.message || 'Failed to delete FAQ')
+      
+      // Show error notification
+      showError(
+        'Failed to delete FAQ',
+        'Please refresh and try again'
+      )
     }
   }
 
@@ -126,11 +164,21 @@ function FAQManager() {
         setFaqs(faqs.map(faq => 
           faq.id === id ? response.data.data : faq
         ))
-        alert(response.data.message)
+        
+        // Show success notification
+        showSuccess(
+          'FAQ status updated',
+          response.data.message
+        )
       }
     } catch (err) {
       console.error('Error toggling FAQ status:', err)
-      alert(err.response?.data?.message || 'Failed to toggle FAQ status')
+      
+      // Show error notification
+      showError(
+        'Failed to toggle FAQ status',
+        'Please refresh and try again'
+      )
     }
   }
 

@@ -1,17 +1,17 @@
 import { useState } from 'react'
 import Select from 'react-select'
-import api from '../config/api' // ADD THIS IMPORT
+import api from '../config/api'
+import { useNotification } from '../context/NotificationContext'
 
 function LoanApplicationForm() {
+  const { showSuccess, showError } = useNotification()
   const [selectedLoanType, setSelectedLoanType] = useState({ value: 'personal', label: 'Personal Loan' })
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phoneNumber: ''
   })
-  const [isSubmitting, setIsSubmitting] = useState(false) // ADD THIS
-  const [submitError, setSubmitError] = useState('') // ADD THIS
-  const [submitSuccess, setSubmitSuccess] = useState(false) // ADD THIS
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Detect if device is mobile
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024
@@ -43,8 +43,6 @@ function LoanApplicationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setSubmitError('')
-    setSubmitSuccess(false)
 
     try {
       // Prepare data for backend
@@ -81,7 +79,11 @@ function LoanApplicationForm() {
       const response = await api.post('/loans/submit', submitData)
 
       if (response.data.success) {
-        setSubmitSuccess(true)
+        // Show success notification
+        showSuccess(
+          'Loan Application Submitted Successfully!',
+          "We'll review your application and get back to you within 3-5 business days."
+        )
 
         // Reset form
         setFormData({
@@ -92,15 +94,15 @@ function LoanApplicationForm() {
 
         // Reset to default loan type with correct value
         setSelectedLoanType({ value: 'personal', label: 'Personal Loan' })
-
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-          setSubmitSuccess(false)
-        }, 5000)
       }
     } catch (error) {
       console.error('Error submitting loan application:', error)
-      setSubmitError(error.response?.data?.message || 'Failed to submit loan application. Please try again.')
+      
+      // Show error notification
+      showError(
+        'Failed to submit loan application',
+        'Please refresh and try again.'
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -209,28 +211,6 @@ function LoanApplicationForm() {
           </p>
         </div>
 
-        {/* Success Message - ADD THIS */}
-        {submitSuccess && (
-          <div className="mb-6 bg-green-50 border border-green-200 rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <svg className="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <div>
-                <p className="text-green-800 font-semibold">Loan Application Submitted Successfully!</p>
-                <p className="text-green-700 text-sm">We'll review your application and get back to you within 3-5 business days.</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Error Message - ADD THIS */}
-        {submitError && (
-          <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-600 text-sm">{submitError}</p>
-          </div>
-        )}
-
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 lg:p-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
@@ -280,17 +260,17 @@ function LoanApplicationForm() {
                 placeholder="Loan Type"
                 styles={customSelectStyles}
                 isSearchable={!isMobile}
+                className="text-sm lg:text-base"
               />
             </div>
 
-            {/* Common Loan Fields */}
             <div>
               <Select
                 name="loanAmount"
                 options={loanAmountOptions}
                 value={formData.loanAmount}
                 onChange={handleSelectChange}
-                placeholder="Desired Loan Amount"
+                placeholder="Loan Amount"
                 styles={customSelectStyles}
                 isSearchable={!isMobile}
                 required
@@ -303,7 +283,7 @@ function LoanApplicationForm() {
                 options={repaymentPeriodOptions}
                 value={formData.repaymentPeriod}
                 onChange={handleSelectChange}
-                placeholder="Desired Repayment Period"
+                placeholder="Preferred Repayment Period"
                 styles={customSelectStyles}
                 isSearchable={!isMobile}
                 required
@@ -341,7 +321,7 @@ function LoanApplicationForm() {
                 <div className="lg:col-span-2">
                   <textarea
                     name="loanPurpose"
-                    placeholder="Purpose of Loan"
+                    placeholder="What will you use the loan for?"
                     value={formData.loanPurpose || ''}
                     onChange={handleChange}
                     rows="3"
@@ -352,7 +332,7 @@ function LoanApplicationForm() {
               </>
             )}
 
-            {/* Business Loan & Equity Financing Specific Fields - IDENTICAL */}
+            {/* Business Loan and Equity Financing Specific Fields */}
             {(selectedLoanType.value === 'business' || selectedLoanType.value === 'equity') && (
               <>
                 <div>
@@ -592,7 +572,7 @@ function LoanApplicationForm() {
             </label>
           </div>
 
-          {/* Submit Button - UPDATE THIS */}
+          {/* Submit Button */}
           <div className="flex justify-center mt-6 lg:mt-8">
             <button
               type="submit"

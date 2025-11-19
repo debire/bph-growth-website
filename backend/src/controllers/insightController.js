@@ -4,17 +4,17 @@ import { uploadToCloudinary, deleteFromCloudinary } from '../utils/uploadHelper.
 // Create new insight with image upload
 export const createInsight = async (req, res) => {
   try {
-    const { category, title, excerpt, content, author, imageUrl } = req.body
+    const { category, title, description, content, imageUrl, imagePublicId } = req.body
 
     // Create insight in database
     const insight = await prisma.insight.create({
       data: {
         category,
         title,
-        excerpt,
+        description,
         content,
-        author,
-        imageUrl: imageUrl || '',
+        image: imageUrl || '',
+        imagePublicId: imagePublicId || '',
         isActive: true
       }
     })
@@ -56,7 +56,7 @@ export const getAllInsights = async (req, res) => {
   }
 }
 
-// Get all insights for admin (including inactive) - NEW FUNCTION
+// Get all insights for admin (including inactive)
 export const getAllInsightsAdmin = async (req, res) => {
   try {
     const insights = await prisma.insight.findMany({
@@ -142,7 +142,7 @@ export const uploadImage = async (req, res) => {
 export const updateInsight = async (req, res) => {
   try {
     const { id } = req.params
-    const { category, title, excerpt, content, author, imageUrl, isActive } = req.body
+    const { category, title, description, content, imageUrl, imagePublicId, isActive } = req.body
 
     // Check if insight exists
     const existingInsight = await prisma.insight.findUnique({
@@ -162,10 +162,10 @@ export const updateInsight = async (req, res) => {
       data: {
         category,
         title,
-        excerpt,
+        description,
         content,
-        author,
-        imageUrl: imageUrl || existingInsight.imageUrl,
+        image: imageUrl || existingInsight.image,
+        imagePublicId: imagePublicId || existingInsight.imagePublicId,
         isActive
       }
     })

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../config/api'
+import { useNotification } from '../../context/NotificationContext'
 
 function ConsultationApplications() {
   const navigate = useNavigate()
+  const { showSuccess, showError } = useNotification()
   const [applications, setApplications] = useState([])
   const [selectedApplication, setSelectedApplication] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -66,11 +68,21 @@ function ConsultationApplications() {
           app.id === id ? { ...app, status: 'approved' } : app
         ))
         setSelectedApplication(null)
-        alert('Application approved! User will receive a confirmation email.')
+        
+        // Show success notification
+        showSuccess(
+          'Application approved!',
+          'User will receive a confirmation email.'
+        )
       }
     } catch (err) {
       console.error('Error approving application:', err)
-      alert(err.response?.data?.message || 'Failed to approve application')
+      
+      // Show error notification
+      showError(
+        'Failed to approve application',
+        'Please refresh and try again.'
+      )
     }
   }
 
@@ -84,11 +96,21 @@ function ConsultationApplications() {
           app.id === id ? { ...app, status: 'denied' } : app
         ))
         setSelectedApplication(null)
-        alert('Application denied. User will be notified via email.')
+        
+        // Show success notification
+        showSuccess(
+          'Application denied',
+          'User will be notified via email.'
+        )
       }
     } catch (err) {
       console.error('Error denying application:', err)
-      alert(err.response?.data?.message || 'Failed to deny application')
+      
+      // Show error notification
+      showError(
+        'Failed to deny application',
+        'Please refresh and try again.'
+      )
     }
   }
 
@@ -181,9 +203,9 @@ function ConsultationApplications() {
                   {applications.map((app) => (
                     <tr key={app.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{app.fullName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{app.companyName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{app.industrySector}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{app.companyName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{app.industrySector}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <div className="flex flex-col">
                           <span className="font-semibold">
                             {new Date(app.scheduledDate).toLocaleDateString('en-US', {

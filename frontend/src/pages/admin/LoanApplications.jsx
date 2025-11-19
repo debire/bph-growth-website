@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../config/api'
+import { useNotification } from '../../context/NotificationContext'
 
 function LoanApplications() {
   const navigate = useNavigate()
+  const { showSuccess, showError } = useNotification()
   const [applications, setApplications] = useState([])
   const [selectedApplication, setSelectedApplication] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -66,11 +68,21 @@ function LoanApplications() {
           app.id === id ? { ...app, status: 'approved' } : app
         ))
         setSelectedApplication(null)
-        alert('Loan approved! User will receive a confirmation email.')
+        
+        // Show success notification
+        showSuccess(
+          'Application approved!',
+          'User will receive a confirmation email.'
+        )
       }
     } catch (err) {
       console.error('Error approving loan:', err)
-      alert(err.response?.data?.message || 'Failed to approve loan')
+      
+      // Show error notification
+      showError(
+        'Failed to approve application',
+        'Please refresh and try again.'
+      )
     }
   }
 
@@ -84,11 +96,21 @@ function LoanApplications() {
           app.id === id ? { ...app, status: 'denied' } : app
         ))
         setSelectedApplication(null)
-        alert('Loan denied. User will be notified via email.')
+        
+        // Show success notification
+        showSuccess(
+          'Application denied',
+          'User will be notified via email.'
+        )
       }
     } catch (err) {
       console.error('Error denying loan:', err)
-      alert(err.response?.data?.message || 'Failed to deny loan')
+      
+      // Show error notification
+      showError(
+        'Failed to deny application',
+        'Please refresh and try again.'
+      )
     }
   }
 

@@ -4,8 +4,10 @@ import 'aos/dist/aos.css'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import api from '../config/api'
+import { useNotification } from '../context/NotificationContext'
 
 function ResourceCenter() {
+  const { showSuccess, showError } = useNotification()
   const [resources, setResources] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedResource, setSelectedResource] = useState(null)
@@ -49,37 +51,49 @@ function ResourceCenter() {
   }
 
   const handleDownload = async (e) => {
-  e.preventDefault()
+    e.preventDefault()
 
-  if (!email) {
-    alert('Please enter your email address')
-    return
-  }
-
-  setIsSubmitting(true)
-
-  try {
-    const response = await api.post('/resources/download', {
-      email,
-      resourceId: selectedResource.id
-    })
-
-    if (response.data.success) {
-      // Instant download using the local file URL
-      window.location.href = response.data.data.downloadUrl
-
-      setTimeout(() => {
-        alert(`Thank you! "${selectedResource.title}" is downloading now and has been sent to ${email}.`)
-        closeDownloadModal()
-      }, 500)
+    if (!email) {
+      showError(
+        'Email Required',
+        'Please enter your email address to download the resource.'
+      )
+      return
     }
-  } catch (error) {
-    console.error('Error downloading resource:', error)
-    alert(error.response?.data?.message || 'Failed to download resource.')
-  } finally {
-    setIsSubmitting(false)
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await api.post('/resources/download', {
+        email,
+        resourceId: selectedResource.id
+      })
+
+      if (response.data.success) {
+        // Instant download using the local file URL
+        window.location.href = response.data.data.downloadUrl
+
+        // Show success notification
+        setTimeout(() => {
+          showSuccess(
+            `${selectedResource.title} is downloading now and has been sent to ${email}.`,
+            ''
+          )
+          closeDownloadModal()
+        }, 500)
+      }
+    } catch (error) {
+      console.error('Error downloading resource:', error)
+      
+      // Show error notification
+      showError(
+        'Failed to download resource.',
+        'Please refresh and try again.'
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
   }
-}
 
   return (
     <div className="bg-white">
