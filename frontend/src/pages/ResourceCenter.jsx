@@ -273,7 +273,7 @@ function ResourceCenter() {
                 disabled={isSubmitting}
                 className="w-full bg-[#60a5fa] text-white py-3 rounded-lg font-semibold hover:bg-[#3b82f6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Processing...' : 'Send Me This Resource'}
+                {isSubmitting ? 'Processing...' : 'Download & Send Me This Resource'}
               </button>
 
               <p className="text-xs text-gray-500 mt-4 text-center">
