@@ -8,6 +8,8 @@ import ContactUs from './pages/ContactUs'
 import Blogs from './pages/Blogs'
 import FAQs from './pages/FAQs'
 import ResourceCenter from './pages/ResourceCenter'
+import CompanyPolicies from './pages/CompanyPolicies'
+
 
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin'
@@ -55,6 +57,8 @@ function App() {
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/faqs" element={<FAQs />} />
         <Route path="/resource-center" element={<ResourceCenter />} />
+        <Route path="/company-policies" element={<CompanyPolicies />} />
+
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
